@@ -63,7 +63,7 @@ export default function Register({ navigation }: any) {
       };
 
       await register(userData);
-      router.replace("/(tabs)");
+      router.replace("/profile");
     } catch (error) {
       Alert.alert(
         "Registration failed",

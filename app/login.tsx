@@ -21,7 +21,7 @@ export default function Login() {
   const handleLogin = async () => {
     try {
       await login(email, password);
-      router.replace("/(tabs)");
+      router.replace("/profile");
     } catch (error) {
       Alert.alert(
         "Login failed",
