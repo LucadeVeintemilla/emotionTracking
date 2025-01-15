@@ -75,7 +75,7 @@ export default function Register({ navigation }: any) {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "position" : "height"}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView contentContainerStyle={styles.container}>
         <TouchableOpacity onPress={pickImage} style={styles.imageContainer}>
