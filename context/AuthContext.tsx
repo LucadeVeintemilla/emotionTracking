@@ -1,6 +1,5 @@
 import React, { createContext, useState, useContext, ReactNode } from "react";
 import * as ImagePicker from "expo-image-picker";
-import { Platform } from "react-native";
 
 export interface User {
   id: string;
@@ -147,10 +146,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (userData.role === "professor") {
         if (userData.images.length == 1) {
           formData.append("image", {
-            uri:
-              Platform.OS === "ios" || Platform.OS === "android"
-                ? userData.images[0]!.uri.replace("file://", "")
-                : userData.images[0]!.uri,
+            uri: userData.images[0]!.uri.replace("file://", ""),
             type: userData.images[0]!.type,
             name: "profile_picture",
           } as any);
@@ -159,10 +155,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // student
         userData.images.forEach((image, index) => {
           formData.append(`image_${index}`, {
-            uri:
-              Platform.OS === "ios" || Platform.OS === "android"
-                ? image.uri.replace("file://", "")
-                : image.uri,
+            uri: userData.images[0]!.uri.replace("file://", ""),
             type: image.type,
             name: `image_${index}`,
           } as any);
