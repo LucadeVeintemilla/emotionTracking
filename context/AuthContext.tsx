@@ -146,7 +146,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (userData.role === "professor") {
         if (userData.images.length == 1) {
-          console.log({ image: userData.images[0]!.uri });
           formData.append("image", {
             uri:
               Platform.OS === "ios" || Platform.OS === "android"
