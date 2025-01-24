@@ -145,27 +145,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         formData.append("password", userData.password);
 
       if (userData.role === "professor") {
-        if (userData.images.length > 0) {
+        if (userData.images.length == 1) {
+          console.log({ image: userData.images[0]!.uri });
           formData.append("image", {
             uri:
-              Platform.OS === "ios"
+              Platform.OS === "ios" || Platform.OS === "android"
                 ? userData.images[0]!.uri.replace("file://", "")
                 : userData.images[0]!.uri,
             type: userData.images[0]!.type,
             name: "profile_picture",
-          });
+          } as any);
         }
       } else {
         // student
         userData.images.forEach((image, index) => {
           formData.append(`image_${index}`, {
             uri:
-              Platform.OS === "ios"
+              Platform.OS === "ios" || Platform.OS === "android"
                 ? image.uri.replace("file://", "")
                 : image.uri,
             type: image.type,
             name: `image_${index}`,
-          });
+          } as any);
         });
       }
 

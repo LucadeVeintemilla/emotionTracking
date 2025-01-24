@@ -16,12 +16,12 @@ import * as ImagePicker from "expo-image-picker";
 import { useAuth, User } from "@/context/AuthContext";
 
 export default function Register({ navigation }: any) {
-  const [name, setName] = useState("TestName");
-  const [lastName, setLastName] = useState("TestLastName");
-  const [email, setEmail] = useState("test@test.com");
-  const [password, setPassword] = useState("123");
-  const [gender, setGender] = useState("male");
-  const [age, setAge] = useState("25");
+  const [name, setName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [gender, setGender] = useState("");
+  const [age, setAge] = useState("");
   const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>(null);
 
   const { register } = useAuth();
