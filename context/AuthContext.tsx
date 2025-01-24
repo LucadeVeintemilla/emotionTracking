@@ -21,10 +21,12 @@ interface AuthContextType {
   register: (
     userData: Omit<User, "id" | "images"> & {
       password: string;
-      image: ImagePicker.ImagePickerAsset | null;
+      images: ImagePicker.ImagePickerAsset[];
     }
   ) => Promise<void>;
   logout: () => void;
+  students: User[];
+  loadStudents: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -32,6 +34,45 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
+
+  const [students, setStudents] = useState<User[]>([]);
+
+  const loadStudents = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/user/students`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const usersData = await response.json();
+        const data: User[] = usersData.map((userData: any) => {
+          const user: User = {
+            id: userData._id,
+            name: userData.name,
+            last_name: userData.last_name,
+            age: parseInt(userData.age, 10),
+            gender: userData.gender,
+            email: userData.email,
+            role: userData.role,
+            images: userData.images,
+          };
+          return user;
+        });
+
+        setStudents(data);
+      } else {
+        throw new Error("Failed to fetch students");
+      }
+    } catch (error) {
+      console.error("Error loading students:", error);
+    }
+  };
 
   const login = async (email: string, password: string) => {
     try {
@@ -88,7 +129,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const register = async (
     userData: Omit<User, "id" | "images"> & {
       password: string;
-      image: ImagePicker.ImagePickerAsset | null;
+      images: ImagePicker.ImagePickerAsset[];
     }
   ) => {
     try {
@@ -99,16 +140,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       formData.append("gender", userData.gender);
       formData.append("email", userData.email);
       formData.append("role", userData.role);
-      formData.append("password", userData.password);
 
-      if (userData.image) {
-        formData.append("images", {
-          uri:
-            Platform.OS === "ios"
-              ? userData.image.uri.replace("file://", "")
-              : userData.image.uri,
-          type: userData.image.type,
-          name: "profile_picture",
+      if (userData.role === "professor")
+        formData.append("password", userData.password);
+
+      if (userData.role === "professor") {
+        if (userData.images.length > 0) {
+          formData.append("image", {
+            uri:
+              Platform.OS === "ios"
+                ? userData.images[0]!.uri.replace("file://", "")
+                : userData.images[0]!.uri,
+            type: userData.images[0]!.type,
+            name: "profile_picture",
+          });
+        }
+      } else {
+        // student
+        userData.images.forEach((image, index) => {
+          formData.append(`image_${index}`, {
+            uri:
+              Platform.OS === "ios"
+                ? image.uri.replace("file://", "")
+                : image.uri,
+            type: image.type,
+            name: `image_${index}`,
+          });
         });
       }
 
@@ -122,7 +179,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (response.ok) {
         const data = await response.json();
-        setToken(data.token);
 
         const userResponse = await fetch(
           `${process.env.EXPO_PUBLIC_API_URL}/user/me`,
@@ -134,20 +190,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           }
         );
 
-        if (userResponse.ok) {
-          const user = await userResponse.json();
-          setUser({
-            id: user._id,
-            name: user.name,
-            last_name: user.last_name,
-            age: parseInt(user.age, 10),
-            gender: user.gender,
-            email: user.email,
-            role: user.role,
-            images: user.images,
-          });
+        if (userData.role === "professor") {
+          setToken(data.token);
+
+          if (userResponse.ok) {
+            const user = await userResponse.json();
+            setUser({
+              id: user._id,
+              name: user.name,
+              last_name: user.last_name,
+              age: parseInt(user.age, 10),
+              gender: user.gender,
+              email: user.email,
+              role: user.role,
+              images: user.images,
+            });
+          } else {
+            throw new Error("Failed to fetch user data");
+          }
         } else {
-          throw new Error("Failed to fetch user data");
         }
       } else {
         throw new Error("Registration failed");
@@ -172,6 +233,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         login,
         register,
         logout,
+        students,
+        loadStudents,
       }}
     >
       {children}

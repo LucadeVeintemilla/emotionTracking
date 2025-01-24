@@ -56,6 +56,38 @@ function RootLayoutNav() {
           presentation: "card",
         }}
       />
+      <Stack.Screen
+        name="create-classroom"
+        options={{
+          title: "Create Classroom",
+          headerShown: true,
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
+        name="create-student"
+        options={{
+          title: "Create Student",
+          headerShown: true,
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
+        name="student/[id]"
+        options={{
+          title: "student",
+          headerShown: true,
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
+        name="classroom/[id]"
+        options={{
+          title: "classroom",
+          headerShown: true,
+          presentation: "modal",
+        }}
+      />
     </Stack>
   );
 }

@@ -10,59 +10,67 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  View,
 } from "react-native";
 import { router } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import { useAuth, User } from "@/context/AuthContext";
 
-export default function Register({ navigation }: any) {
-  const [name, setName] = useState("TestName");
-  const [lastName, setLastName] = useState("TestLastName");
-  const [email, setEmail] = useState("test@test.com");
-  const [password, setPassword] = useState("123");
+export default function CreateStudentScreen() {
+  const [name, setName] = useState("S1");
+  const [lastName, setLastName] = useState("S1");
+  const [email, setEmail] = useState("s1@test.com");
   const [gender, setGender] = useState("male");
-  const [age, setAge] = useState("25");
-  const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>(null);
+  const [age, setAge] = useState("20");
+  const [images, setImages] = useState<(ImagePicker.ImagePickerAsset | null)[]>(
+    [null, null, null]
+  );
 
-  const { register } = useAuth();
+  const { register, loadStudents } = useAuth();
 
-  const pickImage = async () => {
+  const pickImage = async (index: number) => {
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (permissionResult.granted) {
-      let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-      });
+    if (!permissionResult.granted) {
+      Alert.alert("Permission to access the photo library is required!");
+      return;
+    }
 
-      if (!result.canceled) {
-        setImage(result.assets[0]);
-      }
-    } else {
-      alert("Permission to access the photo library is required!");
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const newImages = [...images];
+      newImages[index] = result.assets[0];
+      setImages(newImages);
     }
   };
 
-  const handleRegister = async () => {
+  const handleCreateStudent = async () => {
     try {
       const userData: Omit<User, "id" | "images"> & {
         password: string;
-        images: ImagePicker.ImagePickerAsset[]
+        images: ImagePicker.ImagePickerAsset[];
       } = {
         age: parseInt(age),
         email,
         gender,
         last_name: lastName,
         name,
-        password,
-        role: "professor",
-        images: image ? [image] : [],
+        password: "",
+        role: "student",
+        images: images.filter(
+          (img) => img !== null
+        ) as ImagePicker.ImagePickerAsset[],
       };
 
       await register(userData);
-      router.replace("/profile");
+      await loadStudents();
+      router.replace("/(tabs)/students");
     } catch (error) {
       Alert.alert(
         "Registration failed",
@@ -77,15 +85,22 @@ export default function Register({ navigation }: any) {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView contentContainerStyle={styles.container}>
-        <TouchableOpacity onPress={pickImage} style={styles.imageContainer}>
-          {image ? (
-            <Image source={{ uri: image.uri }} style={styles.image} />
-          ) : (
-            <Text style={styles.addImageText}>Tap to add image</Text>
-          )}
-        </TouchableOpacity>
+        <View style={{ flexDirection: "row", marginVertical: 10 }}>
+          {images.map((image, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => pickImage(index)}
+              style={styles.imageContainer}
+            >
+              {image ? (
+                <Image source={{ uri: image.uri }} style={styles.image} />
+              ) : (
+                <Text style={styles.addImageText}>Tap to add image</Text>
+              )}
+            </TouchableOpacity>
+          ))}
+        </View>
 
-        <Text>Register</Text>
         <TextInput
           style={styles.input}
           placeholder="Name"
@@ -109,14 +124,6 @@ export default function Register({ navigation }: any) {
         />
         <TextInput
           style={styles.input}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          placeholderTextColor="#888"
-        />
-        <TextInput
-          style={styles.input}
           placeholder="Gender"
           value={gender}
           onChangeText={setGender}
@@ -131,11 +138,7 @@ export default function Register({ navigation }: any) {
           placeholderTextColor="#888"
         />
 
-        <Button title="Register" onPress={handleRegister} />
-        <Button
-          title="Already have an account? Sign in"
-          onPress={() => router.navigate("/login")}
-        />
+        <Button title="Create New Student" onPress={handleCreateStudent} />
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -144,7 +147,7 @@ export default function Register({ navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "center",
     padding: 20,
   },
@@ -155,18 +158,18 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingLeft: 8,
     width: "100%",
-    color: "#000", // Text color
-    backgroundColor: "#fff", // Background color
+    color: "#000",
+    backgroundColor: "#fff",
   },
   imageContainer: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     overflow: "hidden",
     backgroundColor: "#e0e0e0",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 20,
+    margin: 5,
   },
   image: {
     width: "100%",
@@ -175,7 +178,7 @@ const styles = StyleSheet.create({
   },
   addImageText: {
     color: "#555",
-    fontSize: 14,
+    fontSize: 12,
     textAlign: "center",
   },
 });
