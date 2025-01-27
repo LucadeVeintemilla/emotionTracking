@@ -52,13 +52,13 @@ export const ClassroomProvider = ({ children }: { children: ReactNode }) => {
       );
 
       if (response.ok) {
-        const classroomsData: Classroom[] = await response.json();
+        const classroomsData: any[] = await response.json();
         const data: Classroom[] = classroomsData.map((classroomData: any) => {
           const classroom: Classroom = {
-            id: classroomData._id,
-            name: classroomData.name,
-            professor_id: classroomData.professor_id,
-            students: classroomData.students,
+            id: classroomData['_id'],
+            name: classroomData['name'],
+            professor_id: classroomData['professor_id'],
+            students: classroomData['students'],
           };
 
           return classroom;

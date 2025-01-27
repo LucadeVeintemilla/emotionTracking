@@ -7,6 +7,7 @@ import {
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { AuthProvider } from "./context/AuthContext";
 import { ClassroomProvider } from "./context/ClassroomContext";
+import { SessionProvider } from "./context/SessionContext";
 
 export const RootProvider = ({ children }: PropsWithChildren) => {
   const colorScheme = useColorScheme();
@@ -14,7 +15,9 @@ export const RootProvider = ({ children }: PropsWithChildren) => {
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <AuthProvider>
-        <ClassroomProvider>{children}</ClassroomProvider>
+        <ClassroomProvider>
+          <SessionProvider>{children}</SessionProvider>
+        </ClassroomProvider>
       </AuthProvider>
     </ThemeProvider>
   );

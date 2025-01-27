@@ -33,9 +33,23 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
+          title: "Session",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="house.fill" color={color} />
+          ),
+          headerRight: () => (
+            <Pressable
+              onPress={() => {
+                router.push("/create-session");
+              }}
+            >
+              <IconSymbol
+                style={{ marginRight: 10 }}
+                size={28}
+                name="plus"
+                color={Colors[colorScheme].tint}
+              />
+            </Pressable>
           ),
         }}
       />

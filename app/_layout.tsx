@@ -65,6 +65,14 @@ function RootLayoutNav() {
         }}
       />
       <Stack.Screen
+        name="create-session"
+        options={{
+          title: "Create Session",
+          headerShown: true,
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
         name="create-student"
         options={{
           title: "Create Student",
@@ -86,6 +94,14 @@ function RootLayoutNav() {
           title: "classroom",
           headerShown: true,
           presentation: "modal",
+        }}
+      />
+      <Stack.Screen
+        name="session/[id]"
+        options={{
+          title: "session",
+          headerShown: true,
+          presentation: "card",
         }}
       />
     </Stack>
