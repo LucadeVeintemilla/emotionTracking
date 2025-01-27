@@ -7,12 +7,15 @@ import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { RootProvider } from "@/RootProvider";
+import { Pressable } from "react-native";
+import { router } from "expo-router";
+import { IconSymbol } from "@/components/ui/IconSymbol";
+import { Colors } from "@/constants/Colors";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
@@ -36,6 +39,8 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
+  const colorScheme = useColorScheme() ?? "light";
+
   return (
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -102,6 +107,16 @@ function RootLayoutNav() {
           title: "session",
           headerShown: true,
           presentation: "card",
+          headerRight: () => (
+            <Pressable onPress={() => {}}>
+              <IconSymbol
+                style={{ marginRight: 10 }}
+                size={28}
+                name="video.fill"
+                color={Colors[colorScheme].tint}
+              />
+            </Pressable>
+          ),
         }}
       />
     </Stack>
