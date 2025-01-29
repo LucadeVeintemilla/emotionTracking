@@ -11,8 +11,6 @@ import { router } from "expo-router";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme() ?? "light";
-  const [isSheetVisible, setSheetVisible] = useState(false);
-  const bottomSheetRef = useRef(null);
 
   return (
     <Tabs
