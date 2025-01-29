@@ -1,13 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, View } from "react-native";
+import {
+  Button,
+  ScrollView,
+  StyleSheet,
+  View,
+  Text,
+  Modal,
+  TouchableOpacity,
+} from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { useAuth, User } from "@/context/AuthContext";
 import { useLocalSearchParams } from "expo-router";
 import { Classroom, useClassroom } from "@/context/ClassroomContext";
-import { Link } from "expo-router";
 import { StudentCard } from "../(tabs)/students";
 import { Session, useSession } from "@/context/SessionContext";
+import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
 
 const SessionDetailScreen = () => {
   const { students, user } = useAuth();
@@ -21,6 +29,8 @@ const SessionDetailScreen = () => {
     null
   );
   const [classroomStudents, setClassroomStudents] = useState<User[]>([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [showVideoModal, setShowVideoModal] = useState(false);
 
   useEffect(() => {
     if (id && sessions) {
@@ -39,6 +49,18 @@ const SessionDetailScreen = () => {
       }
     }
   }, [id, sessions, classrooms, students]);
+
+  const handleStartRecording = () => {
+    setIsRecording(true);
+    setShowVideoModal(true);
+    // Aquí puedes agregar la lógica para iniciar la grabación en tiempo real.
+  };
+
+  const handleStopRecording = () => {
+    setIsRecording(false);
+    setShowVideoModal(false);
+    // Aquí puedes agregar la lógica para detener la grabación y guardar el video.
+  };
 
   if (!session) {
     return (
@@ -67,7 +89,63 @@ const SessionDetailScreen = () => {
           <StudentCard student={student} key={student.id} />
         ))}
       </ScrollView>
+
+      <View style={styles.buttonContainer}>
+        {!isRecording ? (
+          <Button title="Start Recording" onPress={handleStartRecording} />
+        ) : (
+          <></>
+        )}
+      </View>
+
+      <CameraModal
+        showVideoModal={showVideoModal}
+        handleStopRecording={handleStopRecording}
+      />
     </ThemedView>
+  );
+};
+
+const CameraModal = ({
+  showVideoModal,
+  handleStopRecording,
+}: {
+  showVideoModal: boolean;
+  handleStopRecording: () => void;
+}) => {
+  const [facing, setFacing] = useState<CameraType>("back");
+  const [permission, requestPermission] = useCameraPermissions();
+
+  if (!permission) {
+    return <View />;
+  }
+
+  if (!permission.granted) {
+    // Camera permissions are not granted yet.
+    return (
+      <View style={styles.container}>
+        <Text style={styles.message}>
+          We need your permission to show the camera
+        </Text>
+        <Button onPress={requestPermission} title="grant permission" />
+      </View>
+    );
+  }
+
+  function toggleCameraFacing() {
+    setFacing((current) => (current === "back" ? "front" : "back"));
+  }
+
+  return (
+    <Modal visible={showVideoModal} transparent={true}>
+      <View style={styles.modalContainer}>
+        <View style={styles.videoContainer}>
+          <CameraView style={styles.camera} facing={facing} />
+        </View>
+        <Button title="Flip Camera" onPress={toggleCameraFacing} />
+        <Button title="Stop Recording" onPress={handleStopRecording} />
+      </View>
+    </Modal>
   );
 };
 
@@ -85,31 +163,45 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 20,
   },
-  studentCard: {
-    flex: 1,
-    flexDirection: "row",
+  buttonContainer: {
+    marginBottom: 40,
     alignItems: "center",
-    padding: 5,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  videoContainer: {
+    width: "100%",
+    height: "50%",
+    backgroundColor: "white",
     borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  videoText: {
+    fontSize: 16,
+    fontWeight: "bold",
     marginBottom: 10,
   },
-  containerText: {
-    flex: 1,
-    flexDirection: "column",
-    alignItems: "flex-start",
-    justifyContent: "center",
+  message: {
+    textAlign: "center",
+    paddingBottom: 10,
   },
-  containerImages: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "center",
+  camera: {
+    width: "100%",
+    height: "100%",
   },
-  profileImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 50,
-    marginLeft: -15,
+  button: {
+    alignItems: "center",
+  },
+  text: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "white",
   },
 });
 

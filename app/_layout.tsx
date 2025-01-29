@@ -107,16 +107,6 @@ function RootLayoutNav() {
           title: "session",
           headerShown: true,
           presentation: "card",
-          headerRight: () => (
-            <Pressable onPress={() => {}}>
-              <IconSymbol
-                style={{ marginRight: 10 }}
-                size={28}
-                name="video.fill"
-                color={Colors[colorScheme].tint}
-              />
-            </Pressable>
-          ),
         }}
       />
     </Stack>
