@@ -15,7 +15,7 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function Login() {
   const [email, setEmail] = useState("eduar2.moreira@gmail.com");
-  const [password, setPassword] = useState("NeKjp4Ah");
+  const [password, setPassword] = useState("123");
   const { login } = useAuth();
 
   const handleLogin = async () => {

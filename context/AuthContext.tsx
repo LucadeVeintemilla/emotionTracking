@@ -155,7 +155,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // student
         userData.images.forEach((image, index) => {
           formData.append(`image_${index}`, {
-            uri: userData.images[0]!.uri.replace("file://", ""),
+            uri: userData.images[index]!.uri.replace("file://", ""),
             type: image.type,
             name: `image_${index}`,
           } as any);

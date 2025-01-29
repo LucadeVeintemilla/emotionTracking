@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  ScrollView,
-  StyleSheet,
-  View,
-  Text,
-  Modal,
-  TouchableOpacity,
-} from "react-native";
+import { Button, ScrollView, StyleSheet, View } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { useAuth, User } from "@/context/AuthContext";
@@ -15,7 +7,7 @@ import { useLocalSearchParams } from "expo-router";
 import { Classroom, useClassroom } from "@/context/ClassroomContext";
 import { StudentCard } from "../(tabs)/students";
 import { Session, useSession } from "@/context/SessionContext";
-import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
+import CameraModal from "./camera";
 
 const SessionDetailScreen = () => {
   const { students, user } = useAuth();
@@ -70,10 +62,12 @@ const SessionDetailScreen = () => {
     );
   }
 
+  const formattedDate = new Date(session.created_at).toLocaleDateString();
+
   return (
     <ThemedView style={styles.container}>
       <ThemedText style={styles.sessionName}>{session.name}</ThemedText>
-
+      <ThemedText style={{ marginBottom: 20 }}>{formattedDate}</ThemedText>
       <ThemedText style={styles.teacherName}>
         Professor: {user!.name} {user!.last_name}
       </ThemedText>
@@ -85,8 +79,20 @@ const SessionDetailScreen = () => {
       <ThemedText style={styles.teacherName}>Students:</ThemedText>
 
       <ScrollView>
-        {classroomStudents.map((student) => (
-          <StudentCard student={student} key={student.id} />
+        {classroomStudents.map((student, index) => (
+          <View>
+            <StudentCard student={student} key={index} />
+            {index != classroomStudents.length - 1 && (
+              <View
+                style={{
+                  width: "80%",
+                  height: 1,
+                  backgroundColor: "white",
+                  alignSelf: "center",
+                }}
+              />
+            )}
+          </View>
         ))}
       </ScrollView>
 
@@ -99,53 +105,11 @@ const SessionDetailScreen = () => {
       </View>
 
       <CameraModal
+        session_id={session.id}
         showVideoModal={showVideoModal}
         handleStopRecording={handleStopRecording}
       />
     </ThemedView>
-  );
-};
-
-const CameraModal = ({
-  showVideoModal,
-  handleStopRecording,
-}: {
-  showVideoModal: boolean;
-  handleStopRecording: () => void;
-}) => {
-  const [facing, setFacing] = useState<CameraType>("back");
-  const [permission, requestPermission] = useCameraPermissions();
-
-  if (!permission) {
-    return <View />;
-  }
-
-  if (!permission.granted) {
-    // Camera permissions are not granted yet.
-    return (
-      <View style={styles.container}>
-        <Text style={styles.message}>
-          We need your permission to show the camera
-        </Text>
-        <Button onPress={requestPermission} title="grant permission" />
-      </View>
-    );
-  }
-
-  function toggleCameraFacing() {
-    setFacing((current) => (current === "back" ? "front" : "back"));
-  }
-
-  return (
-    <Modal visible={showVideoModal} transparent={true}>
-      <View style={styles.modalContainer}>
-        <View style={styles.videoContainer}>
-          <CameraView style={styles.camera} facing={facing} />
-        </View>
-        <Button title="Flip Camera" onPress={toggleCameraFacing} />
-        <Button title="Stop Recording" onPress={handleStopRecording} />
-      </View>
-    </Modal>
   );
 };
 
@@ -166,42 +130,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginBottom: 40,
     alignItems: "center",
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  videoContainer: {
-    width: "100%",
-    height: "50%",
-    backgroundColor: "white",
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  videoText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  message: {
-    textAlign: "center",
-    paddingBottom: 10,
-  },
-  camera: {
-    width: "100%",
-    height: "100%",
-  },
-  button: {
-    alignItems: "center",
-  },
-  text: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "white",
   },
 });
 

@@ -31,14 +31,16 @@ const HomeScreen = () => {
 };
 
 const SessionCard = ({ session }: { session: Session }) => {
+  const formattedDate = new Date(session.created_at).toLocaleDateString();
+
   return (
     <Link href={`/session/${session.id}`} style={{ margin: 5 }}>
       <ThemedView style={styles.container}>
         <View style={styles.containerText}>
           <ThemedText>{session.name}</ThemedText>
+          <ThemedText>{formattedDate}</ThemedText>
         </View>
       </ThemedView>
-      //{" "}
     </Link>
   );
 };

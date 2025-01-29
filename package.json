@@ -16,10 +16,12 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
+    "@react-native-picker/picker": "2.9.0",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
     "expo": "~52.0.25",
     "expo-blur": "~14.0.2",
+    "expo-camera": "~16.0.14",
     "expo-constants": "~17.0.4",
     "expo-font": "~13.0.3",
     "expo-haptics": "~14.0.1",
@@ -41,8 +43,7 @@
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
-    "@react-native-picker/picker": "2.9.0",
-    "expo-camera": "~16.0.14"
+    "expo-image-manipulator": "~13.0.6"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
