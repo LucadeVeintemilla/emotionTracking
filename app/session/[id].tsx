@@ -44,14 +44,19 @@ const SessionDetailScreen = () => {
 
   const handleStartRecording = () => {
     setIsRecording(true);
+  };
+
+  const handleOpen = () => {
     setShowVideoModal(true);
-    // Aquí puedes agregar la lógica para iniciar la grabación en tiempo real.
   };
 
   const handleStopRecording = () => {
     setIsRecording(false);
+  };
+
+  const handleClose = () => {
+    setIsRecording(false);
     setShowVideoModal(false);
-    // Aquí puedes agregar la lógica para detener la grabación y guardar el video.
   };
 
   if (!session) {
@@ -80,7 +85,7 @@ const SessionDetailScreen = () => {
 
       <ScrollView>
         {classroomStudents.map((student, index) => (
-          <View>
+          <View key={`session-student-${student.id}`}>
             <StudentCard student={student} key={index} />
             {index != classroomStudents.length - 1 && (
               <View
@@ -98,7 +103,7 @@ const SessionDetailScreen = () => {
 
       <View style={styles.buttonContainer}>
         {!isRecording ? (
-          <Button title="Start Recording" onPress={handleStartRecording} />
+          <Button title="Start Recording" onPress={handleOpen} />
         ) : (
           <></>
         )}
@@ -106,8 +111,12 @@ const SessionDetailScreen = () => {
 
       <CameraModal
         session_id={session.id}
+        classroomStudents={classroomStudents}
         showVideoModal={showVideoModal}
         handleStopRecording={handleStopRecording}
+        handleClose={handleClose}
+        handleStartRecording={handleStartRecording}
+        isRecording={isRecording}
       />
     </ThemedView>
   );
