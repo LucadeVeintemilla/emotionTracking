@@ -25,6 +25,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { User } from "@/context/AuthContext";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
+import Slider from "@react-native-community/slider";
 
 type Score = {
   student: User;
@@ -84,7 +85,7 @@ const CameraModal = ({
     if (cameraRef && isRecording) {
       const interval = setInterval(() => {
         handleTakePicture();
-      }, 500);
+      }, 2000);
       return () => clearInterval(interval);
     }
   }, [cameraRef, session_id, isRecording]);
@@ -174,7 +175,7 @@ const CameraModal = ({
                 iconStyle={styles.iconStyle}
                 data={classroomStudents}
                 search
-                maxHeight={300}
+                maxHeight={200}
                 labelField="name"
                 valueField="id"
                 placeholder="Select item"
@@ -193,17 +194,19 @@ const CameraModal = ({
                 )}
                 dropdownPosition="top"
               />
-              <TextInput
-                style={styles.input}
-                keyboardType="numeric"
-                maxLength={2}
-                value={score}
-                onChangeText={(text) => {
-                  setScore(text);
-                  Keyboard.dismiss();
-                }}
-                placeholder="Score"
-              />
+              <View style={{ flex: 1, alignItems: "center" }}>
+                <Text>Score: {score}</Text>
+                <Slider
+                  minimumValue={0}
+                  maximumValue={5}
+                  step={1}
+                  value={Number(score)}
+                  onValueChange={(value) => setScore(value.toString())}
+                  minimumTrackTintColor="blue"
+                  maximumTrackTintColor="gray"
+                  thumbTintColor="blue"
+                />
+              </View>
               <Pressable onPress={handleSetScore}>
                 <IconSymbol size={40} name="plus.app" color="green" />
               </Pressable>
@@ -318,7 +321,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   dropdown: {
-    width: "70%",
+    width: "45%",
     borderBottomColor: "gray",
     borderBottomWidth: 0.5,
   },

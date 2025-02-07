@@ -11,6 +11,9 @@ importers:
       '@expo/vector-icons':
         specifier: ^14.0.2
         version: 14.0.4
+      '@react-native-community/slider':
+        specifier: ^4.5.5
+        version: 4.5.5
       '@react-native-picker/picker':
         specifier: 2.9.0
         version: 2.9.0(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1)
@@ -1073,6 +1076,9 @@ packages:
     resolution: {integrity: sha512-avutXAFL1ehGvAXtPquu0YK5oz6ctS474iM3vNGQIkswrVhdrS52e3uoMQBzZhNRAIE0jBnUyXWNmSjGHhCFcw==}
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
+
+  '@react-native-community/slider@4.5.5':
+    resolution: {integrity: sha512-x2N415pg4ZxIltArOKczPwn7JEYh+1OxQ4+hTnafomnMsqs65HZuEWcX+Ch8c5r8V83DiunuQUf5hWGWlw8hQQ==}
 
   '@react-native-picker/picker@2.9.0':
     resolution: {integrity: sha512-khEhIW/uhfMqq/+tvg4rEAiPGT8GX+Y6QydlP2TSMSmRHoSJK+ShXvXZXSr4Sii4imkj4BwvLunGywwtQDODqg==}
@@ -6090,6 +6096,8 @@ snapshots:
       '@babel/runtime': 7.26.0
       '@radix-ui/react-compose-refs': 1.0.0(react@18.3.1)
       react: 18.3.1
+
+  '@react-native-community/slider@4.5.5': {}
 
   '@react-native-picker/picker@2.9.0(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1)':
     dependencies:
