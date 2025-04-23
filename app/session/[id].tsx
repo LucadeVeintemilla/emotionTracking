@@ -8,11 +8,13 @@ import { Classroom, useClassroom } from "@/context/ClassroomContext";
 import { StudentCard } from "../(tabs)/students";
 import { Session, useSession } from "@/context/SessionContext";
 import CameraModal from "./camera";
+import { useRouter } from "expo-router";
 
 const SessionDetailScreen = () => {
   const { students, user } = useAuth();
-  const { sessions } = useSession();
+  const { sessions, getSessionStats } = useSession();
   const { classrooms } = useClassroom();
+  const router = useRouter();
 
   const { id } = useLocalSearchParams<{ id: string }>();
 
@@ -59,6 +61,28 @@ const SessionDetailScreen = () => {
     setShowVideoModal(false);
   };
 
+  const handleViewStatistics = async () => {
+    if (!session) return;
+    try {
+      const stats = await getSessionStats(session.id);
+      const emotion_types = ['happy', 'sad', 'angry', 'surprised', 'neutral'];
+      const table = stats.map(stat => {
+        const row: Record<string, any> = {
+          student: students.find(s => s.id === stat.student_id)?.name ?? stat.student_id,
+        };
+        for (const emotion of emotion_types) {
+          row[emotion] = stat.after[emotion] || 0;
+        }
+        return row;
+      });
+      console.log("Tabla de emociones AFTER por estudiante:");
+      console.table(table);
+    } catch (e) {
+      console.error("Error fetching stats for table:", e);
+    }
+    router.push(`/session/stats/${session.id}`);
+  };
+
   if (!session) {
     return (
       <ThemedView style={styles.container}>
@@ -71,19 +95,22 @@ const SessionDetailScreen = () => {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText style={styles.sessionName}>{session.name}</ThemedText>
-      <ThemedText style={{ marginBottom: 20 }}>{formattedDate}</ThemedText>
-      <ThemedText style={styles.teacherName}>
-        Professor: {user!.name} {user!.last_name}
-      </ThemedText>
+      <ScrollView 
+        style={styles.scrollContainer}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: 140 }]}
+      >
+        <ThemedText style={styles.sessionName}>{session.name}</ThemedText>
+        <ThemedText style={{ marginBottom: 20 }}>{formattedDate}</ThemedText>
+        <ThemedText style={styles.teacherName}>
+          Professor: {user!.name} {user!.last_name}
+        </ThemedText>
 
-      <ThemedText style={styles.teacherName}>
-        Classroom: {sessionClassroom!.name}
-      </ThemedText>
+        <ThemedText style={styles.teacherName}>
+          Classroom: {sessionClassroom!.name}
+        </ThemedText>
 
-      <ThemedText style={styles.teacherName}>Students:</ThemedText>
+        <ThemedText style={styles.teacherName}>Students:</ThemedText>
 
-      <ScrollView>
         {classroomStudents.map((student, index) => (
           <View key={`session-student-${student.id}`}>
             <StudentCard student={student} key={index} />
@@ -101,13 +128,17 @@ const SessionDetailScreen = () => {
         ))}
       </ScrollView>
 
-      <View style={styles.buttonContainer}>
-        {!isRecording ? (
-          <Button title="Start Recording" onPress={handleOpen} />
-        ) : (
-          <></>
-        )}
-      </View>
+      {!isRecording && (
+        <View style={styles.footer}>
+          <Button title="Start Recording" onPress={handleOpen} color="#0a7ea4" />
+          <View style={styles.buttonSpacerVertical} />
+          <Button 
+            title="View Statistics" 
+            onPress={handleViewStatistics}
+            color="#0a7ea4"
+          />
+        </View>
+      )}
 
       <CameraModal
         session_id={session.id}
@@ -125,7 +156,14 @@ const SessionDetailScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "white", // Asegura fondo opaco
+  },
+  scrollContainer: {
+    flex: 1,
+  },
+  scrollContent: {
     padding: 10,
+    paddingBottom: 120, // Asegura espacio para los botones
   },
   sessionName: {
     fontSize: 24,
@@ -137,8 +175,38 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   buttonContainer: {
-    marginBottom: 40,
-    alignItems: "center",
+    padding: 20,
+    backgroundColor: 'transparent',
+    width: '100%',
+    position: 'absolute',
+    bottom: 0,
+  },
+  footer: {
+    width: '100%',
+    backgroundColor: 'white',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    elevation: 10, // Para que esté por encima del tab bar en Android
+    shadowColor: "#000", // Para iOS
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    position: 'absolute', 
+    bottom: 150,           
+    left: 0, 
+  },
+  buttonGroup: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+  },
+  buttonSpacer: {
+    width: 20,
+  },
+  buttonSpacerVertical: {
+    height: 12,
   },
 });
 

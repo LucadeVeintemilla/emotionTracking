@@ -30,12 +30,13 @@ const ClassroomsScreen = () => {
 const ClassroomCard = ({ classroom }: { classroom: Classroom }) => {
   return (
     <Link href={`/classroom/${classroom.id}`} style={{ margin: 5 }}>
-      <ThemedView style={styles.container}>
-        <View style={styles.containerText}>
-          <ThemedText>{classroom.name}</ThemedText>
+      <ThemedView style={styles.card}>
+        <View style={styles.row}>
+          <View style={styles.containerText}>
+            <ThemedText style={styles.classroomName}>{classroom.name}</ThemedText>
+          </View>
         </View>
       </ThemedView>
-      //{" "}
     </Link>
   );
 };
@@ -43,17 +44,31 @@ const ClassroomCard = ({ classroom }: { classroom: Classroom }) => {
 export default ClassroomsScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  card: {
+    padding: 15,
+    borderRadius: 10,
+    marginVertical: 0.1,
+    width: "100%",
+    backgroundColor: "white",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  row: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 5,
-    borderRadius: 10,
+    width: "100%",
   },
   containerText: {
     flex: 1,
     flexDirection: "column",
     alignItems: "flex-start",
     justifyContent: "center",
+  },
+  classroomName: {
+    fontSize: 18,
+    fontWeight: "600",
   },
 });

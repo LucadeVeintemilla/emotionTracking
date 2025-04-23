@@ -12,6 +12,13 @@ export interface Session {
   student_emotions: any[];
 }
 
+interface EmotionStats {
+  student_id: string;
+  before: { [key: string]: number };
+  after: { [key: string]: number };
+  total_frames: number;
+}
+
 interface SessionContextType {
   sessions: Session[];
   loadSessions: () => Promise<void>;
@@ -22,10 +29,13 @@ interface SessionContextType {
   processFrame: ({
     image_url,
     session_id,
+    student_id,
   }: {
     image_url: string;
     session_id: string;
+    student_id: string;
   }) => any;
+  getSessionStats: (session_id: string) => Promise<EmotionStats[]>;
 }
 
 const SessionContext = createContext<SessionContextType | undefined>(undefined);
@@ -104,13 +114,16 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const processFrame = async ({
     image_url,
     session_id,
+    student_id,
   }: {
     image_url: string;
     session_id: string;
+    student_id: string;
   }) => {
     try {
       const formData = new FormData();
       formData.append("session_id", session_id);
+      formData.append("student_id", student_id);
       formData.append("detector_backend", "mtcnn");
       formData.append("image", {
         uri: image_url,
@@ -150,6 +163,30 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const getSessionStats = async (session_id: string) => {
+    try {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/emotion/session/${session_id}/stats`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to get session stats");
+      }
+
+      const data = await response.json();
+      return data.stats;
+    } catch (error) {
+      console.error("Error getting session stats:", error);
+      throw error;
+    }
+  };
+
   return (
     <SessionContext.Provider
       value={{
@@ -157,6 +194,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
         loadSessions,
         addSession,
         processFrame,
+        getSessionStats,
       }}
     >
       {children}

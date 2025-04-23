@@ -19,14 +19,19 @@ const HomeScreen = () => {
   }, []);
 
   return (
-    <ScrollView>
-      <View style={{ margin: 5 }}>
-        <ThemedText>Sessions</ThemedText>
-        {sessions.map((session, index) => (
-          <SessionCard session={session} key={index} />
-        ))}
-      </View>
-    </ScrollView>
+    <View style={{ flex: 1 }}>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 80 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={{ margin: 5 }}>
+          <ThemedText>Sessions</ThemedText>
+          {sessions.map((session, index) => (
+            <SessionCard session={session} key={index} />
+          ))}
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
@@ -35,10 +40,12 @@ const SessionCard = ({ session }: { session: Session }) => {
 
   return (
     <Link href={`/session/${session.id}`} style={{ margin: 5 }}>
-      <ThemedView style={styles.container}>
-        <View style={styles.containerText}>
-          <ThemedText>{session.name}</ThemedText>
-          <ThemedText>{formattedDate}</ThemedText>
+      <ThemedView style={styles.card}>
+        <View style={styles.row}>
+          <View style={styles.containerText}>
+            <ThemedText style={styles.sessionName}>{session.name}</ThemedText>
+            <ThemedText style={styles.date}>{formattedDate}</ThemedText>
+          </View>
         </View>
       </ThemedView>
     </Link>
@@ -48,17 +55,35 @@ const SessionCard = ({ session }: { session: Session }) => {
 export default HomeScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  card: {
+    padding: 15,
+    borderRadius: 10,
+    marginVertical: 5,
+    width: "100%",
+    backgroundColor: "white",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  row: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 5,
-    borderRadius: 10,
+    width: "100%",
   },
   containerText: {
     flex: 1,
     flexDirection: "column",
     alignItems: "flex-start",
     justifyContent: "center",
+  },
+  sessionName: {
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  date: {
+    fontSize: 14,
+    opacity: 0.7,
   },
 });

@@ -15,6 +15,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { useClassroom } from "@/context/ClassroomContext";
 import { router } from "expo-router";
+import { IconSymbol } from "@/components/ui/IconSymbol";
 
 const getImageUrl = (path: string) => {
   return `${process.env.EXPO_PUBLIC_API_URL}/user/${path}`;
@@ -25,18 +26,35 @@ const CreateClassroomScreen = () => {
   const { addClassroom } = useClassroom();
   const [name, setName] = useState("");
   const [selectedStudents, setSelectedStudents] = useState<User[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    loadStudents();
+    if (!students || students.length === 0) {
+      const loadData = async () => {
+        try {
+          await loadStudents();
+        } catch (error) {
+          console.error("Error loading students:", error);
+        }
+      };
+      loadData();
+    }
   }, []);
+  
 
   const toggleSelectStudent = (student: User) => {
-    const isSelected = selectedStudents.some((s) => s.id === student.id);
-    if (isSelected) {
-      setSelectedStudents((prev) => prev.filter((s) => s.id !== student.id));
-    } else {
-      setSelectedStudents((prev) => [...prev, student]);
+    if (!student || !student.id) {
+      return;
     }
+
+    setSelectedStudents((prev) => {
+      const isSelected = prev.some((s) => s.id === student.id);
+      if (isSelected) {
+        return prev.filter((s) => s.id !== student.id);
+      } else {
+        return [...prev, student];
+      }
+    });
   };
 
   const handleCreateClassroom = () => {
@@ -59,20 +77,30 @@ const CreateClassroomScreen = () => {
   };
 
   const renderStudentItem = ({ item }: { item: User }) => {
+    if (!item || !item.id) {
+      return null;
+    }
+
     const isSelected = selectedStudents.some((s) => s.id === item.id);
 
     return (
       <TouchableOpacity
         style={[styles.item, isSelected && styles.selectedItem]}
         onPress={() => toggleSelectStudent(item)}
+        activeOpacity={0.7}
       >
+        <View style={styles.checkboxContainer}>
+          <View style={[styles.checkbox, isSelected && styles.checkboxSelected]}>
+            {isSelected && <IconSymbol name="checkmark" size={16} color="white" />}
+          </View>
+        </View>
         <Image
           source={{ uri: getImageUrl(item.images[0]) }}
           style={styles.avatar}
         />
         <View style={styles.textContainer}>
-          <ThemedText>{item.name}</ThemedText>
-          <ThemedText>{item.email}</ThemedText>
+          <ThemedText style={styles.studentName}>{item.name}</ThemedText>
+          <ThemedText style={styles.studentEmail}>{item.email}</ThemedText>
         </View>
       </TouchableOpacity>
     );
@@ -94,24 +122,18 @@ const CreateClassroomScreen = () => {
         />
 
         <ThemedText style={styles.label}>Select Students:</ThemedText>
-        <View
-          style={{
-            width: "100%",
-            height: 500,
-          }}
-        >
+        <View style={styles.listContainer}>
           <FlatList
-            style={{
-              width: "100%",
-            }}
-            data={students}
-            keyExtractor={(item) => item.id.toString()}
+            data={students || []}
+            keyExtractor={(item) => item?.id?.toString() || Math.random().toString()}
             renderItem={renderStudentItem}
             contentContainerStyle={styles.list}
           />
         </View>
 
-        <Button title="Create Classroom" onPress={handleCreateClassroom} />
+        <View style={styles.buttonContainer}>
+          <Button title="Create Classroom" onPress={handleCreateClassroom} />
+        </View>
       </ThemedView>
     </KeyboardAvoidingView>
   );
@@ -119,51 +141,94 @@ const CreateClassroomScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
     padding: 20,
+    paddingBottom: 80, // Add padding for button
   },
   label: {
-    alignSelf: "flex-start",
-    marginBottom: 5,
     fontSize: 16,
     fontWeight: "bold",
+    marginBottom: 8,
   },
   input: {
     height: 40,
     borderColor: "gray",
     borderWidth: 1,
-    marginBottom: 12,
-    paddingLeft: 8,
+    marginBottom: 20,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    backgroundColor: "white",
+  },
+  listContainer: {
     width: "100%",
-    color: "#000",
-    backgroundColor: "#fff",
+    height: "70%", // Fixed height instead of flex: 1
+    marginBottom: 20,
   },
   list: {
-    width: "100%",
-    height: 200,
+    paddingVertical: 8,
   },
   item: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    marginBottom: 10,
+    padding: 12,
+    marginVertical: 4,
+    marginHorizontal: 8,
+    borderRadius: 12,
+    backgroundColor: "white",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
   },
   selectedItem: {
-    borderColor: "#80c0a0",
+    backgroundColor: "#f0f9ff",
+  },
+  checkboxContainer: {
+    marginRight: 12,
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: "#ccc",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  checkboxSelected: {
+    backgroundColor: "#2196F3",
+    borderColor: "#2196F3",
   },
   avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 10,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 12,
   },
   textContainer: {
-    flexDirection: "column",
+    flex: 1,
+    justifyContent: "center",
+  },
+  studentName: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 4,
+  },
+  studentEmail: {
+    fontSize: 14,
+    color: "#666",
+  },
+  buttonContainer: {
+    width: "100%",
+    paddingVertical: 10,
+    backgroundColor: "transparent",
+    marginTop: "auto", // Push to bottom of available space
   },
 });
 

@@ -109,6 +109,14 @@ function RootLayoutNav() {
           presentation: "card",
         }}
       />
+      <Stack.Screen
+        name="session/stats/[id]"
+        options={{
+          title: "Emotion Statistics",
+          headerShown: true,
+          presentation: "modal",
+        }}
+      />
     </Stack>
   );
 }

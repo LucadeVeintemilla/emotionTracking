@@ -36,40 +36,41 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const [students, setStudents] = useState<User[]>([]);
 
-  const loadStudents = async () => {
+  const loadStudents = async (): Promise<void> => {
     try {
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_API_URL}/user/students`,
         {
-          method: "GET",
+          method: 'GET',
           headers: {
-            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
           },
         }
       );
 
       if (response.ok) {
-        const usersData = await response.json();
-        const data: User[] = usersData.map((userData: any) => {
-          const user: User = {
-            id: userData._id,
-            name: userData.name,
-            last_name: userData.last_name,
-            age: parseInt(userData.age, 10),
-            gender: userData.gender,
-            email: userData.email,
-            role: userData.role,
-            images: userData.images,
-          };
-          return user;
-        });
-
-        setStudents(data);
+        const rawData = await response.json();
+        const formattedStudents: User[] = rawData.map((student: any) => ({
+          id: student._id,
+          name: student.name,
+          last_name: student.last_name,
+          age: parseInt(student.age),
+          gender: student.gender,
+          email: student.email,
+          role: student.role,
+          images: student.images,
+        }));
+        setStudents(formattedStudents);
       } else {
-        throw new Error("Failed to fetch students");
+        console.error("Failed to load students:", response.status);
       }
     } catch (error) {
-      console.error("Error loading students:", error);
+      console.error("Error in loadStudents:", error);
     }
   };
 
@@ -130,7 +131,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       password: string;
       images: ImagePicker.ImagePickerAsset[];
     }
-  ) => {
+  ): Promise<void> => {
     try {
       const formData = new FormData();
       formData.append("name", userData.name);
@@ -140,24 +141,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       formData.append("email", userData.email);
       formData.append("role", userData.role);
 
-      if (userData.role === "professor")
-        formData.append("password", userData.password);
-
       if (userData.role === "professor") {
-        if (userData.images.length == 1) {
+        formData.append("password", userData.password);
+        if (userData.images.length === 1) {
+          const image = userData.images[0];
           formData.append("image", {
-            uri: userData.images[0]!.uri.replace("file://", ""),
-            type: userData.images[0]!.type,
-            name: "profile_picture",
+            uri: image.uri.replace("file://", ""),
+            type: image.mimeType || "image/jpeg",
+            name: "profile_picture.jpg"
           } as any);
         }
       } else {
-        // student
+        // Para estudiantes, adjuntar múltiples imágenes
         userData.images.forEach((image, index) => {
           formData.append(`image_${index}`, {
-            uri: userData.images[index]!.uri.replace("file://", ""),
-            type: image.type,
-            name: `image_${index}`,
+            uri: image.uri.replace("file://", ""),
+            type: image.mimeType || "image/jpeg",
+            name: `student_image_${index}.jpg`
           } as any);
         });
       }
@@ -167,6 +167,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         {
           method: "POST",
           body: formData,
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'multipart/form-data',
+          },
         }
       );
 
@@ -201,7 +205,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           } else {
             throw new Error("Failed to fetch user data");
           }
-        } else {
+        } else if (userData.role === "student") {
+          await loadStudents();
         }
       } else {
         throw new Error("Registration failed");

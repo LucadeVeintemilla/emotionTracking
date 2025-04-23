@@ -64,7 +64,12 @@ const CameraModal = ({
   const colorScheme = useColorScheme() ?? "light";
 
   const handleTakePicture = async () => {
-    if (cameraRef) {
+    if (!cameraRef || !selectedStudent?.id || !session_id) {
+      console.log("Missing required data:", { cameraRef, selectedStudent, session_id });
+      return;
+    }
+
+    try {
       const photo = await cameraRef.takePictureAsync();
 
       const manipulatedPhoto = await ImageManipulator.manipulateAsync(
@@ -76,19 +81,24 @@ const CameraModal = ({
       const processedImageUrl = await processFrame({
         image_url: manipulatedPhoto.uri.replace("file://", ""),
         session_id,
+        student_id: selectedStudent.id,
       });
       if (processedImageUrl) setCurrentPicture(processedImageUrl);
+    } catch (error) {
+      console.error("Error taking picture:", error);
     }
   };
 
   useEffect(() => {
-    if (cameraRef && isRecording) {
-      const interval = setInterval(() => {
-        handleTakePicture();
-      }, 2000);
-      return () => clearInterval(interval);
+    if (!cameraRef || !selectedStudent?.id || !session_id || !isRecording) {
+      return;
     }
-  }, [cameraRef, session_id, isRecording]);
+
+    const interval = setInterval(() => {
+      handleTakePicture();
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [cameraRef, session_id, isRecording, selectedStudent]);
 
   function toggleCameraFacing() {
     setFacing((current) => (current === "back" ? "front" : "back"));
@@ -151,71 +161,84 @@ const CameraModal = ({
                 style={styles.camera}
               />
             </View>
+            
             <View style={styles.pictureContainer}>
               <Image
                 source={{ uri: currentPicture ?? "" }}
                 style={styles.picture}
               />
             </View>
-            <Pressable
-              onPress={isRecording ? handleStopRecording : handleStartRecording}
-            >
-              <IconSymbol
-                size={40}
-                name={isRecording ? "stop" : "play"}
-                color={isRecording ? "red" : "green"}
-              />
-            </Pressable>
-            <View style={styles.setScoreContainer}>
+
+            <View style={styles.controlsContainer}>
+              <Pressable
+                disabled={!selectedStudent}
+                onPress={isRecording ? handleStopRecording : handleStartRecording}
+              >
+                <IconSymbol
+                  size={40}
+                  name={isRecording ? "stop" : "play"}
+                  color={!selectedStudent ? "gray" : isRecording ? "red" : "green"}
+                />
+              </Pressable>
+            </View>
+
+            <View style={styles.scoreInputContainer}>
               <Dropdown
                 style={styles.dropdown}
                 placeholderStyle={styles.placeholderStyle}
                 selectedTextStyle={styles.selectedTextStyle}
                 inputSearchStyle={styles.inputSearchStyle}
                 iconStyle={styles.iconStyle}
-                data={classroomStudents}
+                data={classroomStudents.filter(student => student?.id)}
                 search
                 maxHeight={200}
                 labelField="name"
                 valueField="id"
-                placeholder="Select item"
+                placeholder="Select student"
                 searchPlaceholder="Search..."
-                value={selectedStudent}
+                value={selectedStudent?.id || ""}
                 onChange={(item) => {
-                  setSelectedStudent(item);
+                  if (!item?.id) return;
+                  const student = classroomStudents.find(s => s?.id === item.id);
+                  setSelectedStudent(student || null);
                 }}
-                renderLeftIcon={() => (
-                  <AntDesign
-                    style={styles.icon}
-                    color="black"
-                    name="Safety"
-                    size={20}
-                  />
-                )}
-                dropdownPosition="top"
               />
-              <View style={{ flex: 1, alignItems: "center" }}>
-                <Text>Score: {score}</Text>
+              <View style={styles.sliderContainer}>
                 <Slider
+                  style={{ flex: 1 }}
                   minimumValue={0}
                   maximumValue={5}
                   step={1}
                   value={Number(score)}
                   onValueChange={(value) => setScore(value.toString())}
-                  minimumTrackTintColor="blue"
-                  maximumTrackTintColor="gray"
-                  thumbTintColor="blue"
+                  minimumTrackTintColor="#2196F3"
+                  maximumTrackTintColor="#000001"
+                  thumbTintColor="#2196F3"
                 />
               </View>
-              <Pressable onPress={handleSetScore}>
-                <IconSymbol size={40} name="plus.app" color="green" />
+              <Pressable 
+                onPress={handleSetScore}
+                style={styles.addScoreButton}
+                disabled={!selectedStudent || !score}
+              >
+                <IconSymbol 
+                  size={30} 
+                  name="plus.app" 
+                  color={(!selectedStudent || !score) ? "gray" : "green"} 
+                />
               </Pressable>
             </View>
-            <ScrollView style={styles.textListContainer}>
-              {scoresList.map((item, i) => (
-                <StudentCard score={item} key={i} />
-              ))}
-            </ScrollView>
+
+            <View style={styles.scoresContainer}>
+              <ScrollView 
+                style={styles.scoresList}
+                contentContainerStyle={styles.scoresListContent}
+              >
+                {scoresList.map((item, i) => (
+                  <StudentCard score={item} key={i} />
+                ))}
+              </ScrollView>
+            </View>
           </View>
         </View>
       </TouchableWithoutFeedback>
@@ -267,33 +290,80 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   videoContainer: {
-    marginTop: 20,
-    width: "99.5%",
-    height: "94%",
-    backgroundColor: "white",
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'white',
     borderRadius: 10,
-    alignItems: "center",
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    padding: 10,
+    marginTop: 80,
   },
   cameraContainer: {
-    width: "100%",
-    height: "30%",
+    height: '25%',
+    width: '100%',
     borderWidth: 1,
-    borderColor: "gray",
-    backgroundColor: "lightgray",
+    borderColor: 'gray',
+    backgroundColor: 'lightgray',
+    marginBottom: 5,
   },
   pictureContainer: {
-    width: "100%",
-    height: "30%",
+    height: '25%',
+    width: '100%',
     borderWidth: 1,
-    borderColor: "gray",
-    backgroundColor: "lightgray",
-    marginTop: 2,
+    borderColor: 'gray',
+    marginBottom: 5,
   },
   camera: {
     width: "100%",
     height: "100%",
+  },
+  controlsContainer: {
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  recordButton: {
+    padding: 10,
+  },
+  scoreInputContainer: {
+    width: '100%',
+    padding: 5,
+    backgroundColor: '#f8f8f8',
+    borderRadius: 8,
+    marginBottom: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  sliderContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 40,
+  },
+  scoreText: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  addScoreButton: {
+    flex: 0.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 40,
+  },
+  scoresContainer: {
+    flex: 1,
+    width: '100%',
+    backgroundColor: '#f0f0f0',
+    borderRadius: 8,
+    marginTop: 5,
+  },
+  scoresList: {
+    flex: 1,
+    width: '100%',
+  },
+  scoresListContent: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
   },
   setScoreContainer: {
     height: "auto",
@@ -321,9 +391,13 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   dropdown: {
-    width: "45%",
-    borderBottomColor: "gray",
-    borderBottomWidth: 0.5,
+    flex: 2,
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 4,
+    height: 40,
   },
   icon: {
     marginRight: 5,

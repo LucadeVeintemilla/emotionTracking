@@ -6,14 +6,16 @@ import {
   KeyboardAvoidingView,
   Platform,
   View,
-  Image,
   FlatList,
   TouchableOpacity,
 } from "react-native";
-import { useAuth, User } from "@/context/AuthContext";
+import { IconSymbol } from "@/components/ui/IconSymbol";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Classroom, useClassroom } from "@/context/ClassroomContext";
+
+// Ensure Classroom interface has id defined as string | number
+type SafeClassroom = Omit<Classroom, 'id'> & { id: string | number };
 import { router } from "expo-router";
 import { Session, useSession } from "@/context/SessionContext";
 
@@ -25,47 +27,56 @@ const CreateSessionScreen = () => {
   const { classrooms, loadClassrooms } = useClassroom();
   const { addSession } = useSession();
   const [name, setName] = useState("");
-  const [selectedClassroom, setSelectedClassroom] = useState<Classroom | null>(
-    null
-  );
+  const [selectedClassroomId, setSelectedClassroomId] = useState<string | null>(null);
 
   useEffect(() => {
-    loadClassrooms();
+    const init = async () => {
+      console.log("Initializing CreateSessionScreen");
+      await loadClassrooms();
+    };
+    init();
   }, []);
 
+  useEffect(() => {
+    console.log("Classrooms updated:", classrooms);
+  }, [classrooms]);
+
+  const handleSelectClassroom = (classroom: Classroom) => {
+    console.log("Selecting classroom:", classroom);
+    setSelectedClassroomId(classroom.id);
+  };
+
   const handleCreateSession = () => {
-    if (!name || !selectedClassroom) {
+    if (!name || !selectedClassroomId) {
       alert("Please fill all fields");
       return;
     }
 
-    const sessionData = {
-      name,
-      classroom_id: selectedClassroom.id,
-    };
-
     try {
-      addSession(sessionData);
+      addSession({
+        name,
+        classroom_id: selectedClassroomId
+      });
       router.replace("/");
     } catch (error) {
       console.error("Error creating session:", error);
     }
   };
 
-  const handleSelectClassroom = (classroom: Classroom) => {
-    setSelectedClassroom(classroom);
-  };
-
   const renderClassroomItem = ({ item }: { item: Classroom }) => {
-    const isSelected = selectedClassroom?.id === item.id;
-
+    const isSelected = selectedClassroomId === item.id;
+    
     return (
       <TouchableOpacity
         style={[styles.item, isSelected && styles.selectedItem]}
         onPress={() => handleSelectClassroom(item)}
+        activeOpacity={0.7}
       >
+        <View style={[styles.checkbox, isSelected && styles.checkboxSelected]}>
+          {isSelected && <IconSymbol name="checkmark" size={16} color="white" />}
+        </View>
         <View style={styles.textContainer}>
-          <ThemedText>{item.name}</ThemedText>
+          <ThemedText style={styles.className}>{item.name}</ThemedText>
         </View>
       </TouchableOpacity>
     );
@@ -77,34 +88,40 @@ const CreateSessionScreen = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ThemedView style={styles.container}>
-        <ThemedText style={styles.label}>Enter Session Name:</ThemedText>
-        <TextInput
-          style={styles.input}
-          placeholder="Session Name"
-          value={name}
-          onChangeText={setName}
-          placeholderTextColor="#888"
-        />
-
-        <ThemedText style={styles.label}>Select Classroom</ThemedText>
-        <View
-          style={{
-            width: "100%",
-            height: 500,
-          }}
-        >
-          <FlatList
-            style={{
-              width: "100%",
-            }}
-            data={classrooms}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={renderClassroomItem}
-            contentContainerStyle={styles.list}
+        <View style={styles.contentContainer}>
+          <ThemedText style={styles.label}>Enter Session Name:</ThemedText>
+          <TextInput
+            style={styles.input}
+            placeholder="Session Name"
+            value={name}
+            onChangeText={setName}
+            placeholderTextColor="#888"
           />
+
+          <ThemedText style={styles.label}>
+            Select Classroom ({classrooms.length})
+          </ThemedText>
+          <View style={styles.listContainer}>
+            <FlatList
+              data={classrooms}
+              keyExtractor={(item) => item.id}
+              renderItem={renderClassroomItem}
+              contentContainerStyle={styles.list}
+              ListEmptyComponent={() => (
+                <ThemedText style={styles.emptyText}>No classrooms available</ThemedText>
+              )}
+              showsVerticalScrollIndicator={true}
+            />
+          </View>
         </View>
 
-        <Button title="Create Session" onPress={handleCreateSession} />
+        <View style={styles.buttonContainer}>
+          <Button 
+            title="Create Session" 
+            onPress={handleCreateSession} 
+            disabled={!name || !selectedClassroomId}
+          />
+        </View>
       </ThemedView>
     </KeyboardAvoidingView>
   );
@@ -112,10 +129,13 @@ const CreateSessionScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    justifyContent: "flex-start",
-    alignItems: "center",
-    padding: 20,
+    flex: 1,
+    justifyContent: "space-between",
+    padding: 50,
+  },
+  contentContainer: {
+    flex: 1,
+    width: "100%",
   },
   label: {
     alignSelf: "flex-start",
@@ -135,19 +155,53 @@ const styles = StyleSheet.create({
   },
   list: {
     width: "100%",
-    height: 200,
+    paddingBottom: 10,
+  },
+  listContainer: {
+    flex: 1,
+    width: "100%",
+    marginBottom: 10,
   },
   item: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    marginBottom: 10,
+    padding: 12,
+    marginVertical: 4,
+    marginHorizontal: 8,
+    borderRadius: 12,
+    backgroundColor: "white",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
   },
   selectedItem: {
-    borderColor: "#80c0a0",
+    backgroundColor: "#f0f9ff",
+  },
+  checkboxContainer: {
+    marginRight: 12,
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: "#ccc",
+    marginRight: 12,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  checkboxSelected: {
+    backgroundColor: "#2196F3",
+    borderColor: "#2196F3",
+  },
+  className: {
+    fontSize: 16,
+    fontWeight: "600",
   },
   avatar: {
     width: 40,
@@ -157,6 +211,14 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flexDirection: "column",
+  },
+  emptyText: {
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  buttonContainer: {
+    width: "100%",
+    paddingVertical: 60,
   },
 });
 

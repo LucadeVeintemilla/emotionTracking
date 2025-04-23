@@ -7,17 +7,17 @@ import { useLocalSearchParams } from "expo-router";
 
 const StudentDetailScreen = () => {
   const { students } = useAuth();
-  const { id } = useLocalSearchParams<{ id: string }>();
-
+  const params = useLocalSearchParams<{ id: string }>();
   const [student, setStudent] = useState<User | null>(null);
 
   useEffect(() => {
-    console.log({ id });
-    if (id && students) {
-      const foundStudent = students.find((student) => student.id === id);
+    if (params.id && students) {
+      const foundStudent = students.find(
+        (student) => student.id === params.id.toString()
+      );
       setStudent(foundStudent || null);
     }
-  }, [id, students]);
+  }, [params.id, students]);
 
   const getImageUrl = (path: string) => {
     return `${process.env.EXPO_PUBLIC_API_URL}/user/${path}`;

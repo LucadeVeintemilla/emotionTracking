@@ -6,45 +6,64 @@ import { useAuth, User } from "@/context/AuthContext";
 import { Link } from "expo-router";
 
 const StudentsScreen = () => {
-  const { loadStudents, students } = useAuth();
+  const { students, loadStudents } = useAuth();
 
   useEffect(() => {
-    loadStudents();
+    const loadData = async () => {
+      try {
+        await loadStudents();
+      } catch (error) {
+        console.error("Error loading students:", error);
+      }
+    };
+    loadData();
   }, []);
 
   return (
     <ScrollView>
       <View style={{ margin: 5 }}>
-        <ThemedText>Students</ThemedText>
-        {students.map((student, index) => (
-          <StudentCard student={student} key={index} />
-        ))}
+        <ThemedText>Students ({students.length})</ThemedText>
+        {students && students.length > 0 ? (
+          students.map((student) => (
+            <StudentCard 
+              key={`student-${student.id}`} 
+              student={student} 
+            />
+          ))
+        ) : (
+          <ThemedText>No students found</ThemedText>
+        )}
       </View>
     </ScrollView>
   );
 };
 
 export const StudentCard = ({ student }: { student: User }) => {
+  if (!student || !student.id) {
+    return null;
+  }
+
   const getImageUrl = (path: string) => {
-    return `${process.env.EXPO_PUBLIC_API_URL}/user/${path}`;
+    return path ? `${process.env.EXPO_PUBLIC_API_URL}/user/${path}` : "";
   };
 
   return (
-    <Link href={`/student/${student.id}`} style={{ margin: 5 }}>
+    <Link
+      href={{
+        pathname: "/student/[id]",
+        params: { id: student.id }
+      }}
+      style={{ margin: 5 }}
+    >
       <ThemedView style={styles.container}>
         <View style={styles.containerImages}>
-          <Image
-            source={{ uri: student ? getImageUrl(student.images[0]) : "" }}
-            style={styles.profileImage}
-          />
-          <Image
-            source={{ uri: student ? getImageUrl(student.images[1]) : "" }}
-            style={styles.profileImage}
-          />
-          <Image
-            source={{ uri: student ? getImageUrl(student.images[2]) : "" }}
-            style={styles.profileImage}
-          />
+          {student.images.map((image, index) => (
+            <Image
+              key={index}
+              source={{ uri: image ? getImageUrl(image) : "" }}
+              style={styles.profileImage}
+            />
+          ))}
         </View>
         <View style={styles.containerText}>
           <ThemedText>

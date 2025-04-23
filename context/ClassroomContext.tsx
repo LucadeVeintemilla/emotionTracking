@@ -40,6 +40,7 @@ export const ClassroomProvider = ({ children }: { children: ReactNode }) => {
 
   const loadClassrooms = async () => {
     try {
+      console.log("Loading classrooms...");
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_API_URL}/classroom/get_classrooms`,
         {
@@ -52,24 +53,21 @@ export const ClassroomProvider = ({ children }: { children: ReactNode }) => {
       );
 
       if (response.ok) {
-        const classroomsData: any[] = await response.json();
-        const data: Classroom[] = classroomsData.map((classroomData: any) => {
-          const classroom: Classroom = {
-            id: classroomData['_id'],
-            name: classroomData['name'],
-            professor_id: classroomData['professor_id'],
-            students: classroomData['students'],
-          };
+        const classroomsData = await response.json();
+        console.log("Raw classrooms data:", classroomsData);
+        
+        const formattedClassrooms: Classroom[] = classroomsData.map((classroom: any) => ({
+          id: classroom._id.toString(),
+          name: classroom.name,
+          professor_id: classroom.professor_id.toString(),
+          students: classroom.students.map((id: any) => id.toString())
+        }));
 
-          return classroom;
-        });
-
-        setClassrooms(data);
-      } else {
-        throw new Error("Failed to fetch classrooms");
+        console.log("Formatted classrooms:", formattedClassrooms);
+        setClassrooms(formattedClassrooms);
       }
     } catch (error) {
-      console.error("Error loading classrooms:", error);
+      console.error("Error in loadClassrooms:", error);
     }
   };
 
@@ -78,8 +76,9 @@ export const ClassroomProvider = ({ children }: { children: ReactNode }) => {
     students: string[];
   }) => {
     try {
-      const classroomDataJson = JSON.stringify(classroomData);
-      console.log("classroomDataJson", classroomDataJson);
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_API_URL}/classroom/create_classroom`,
         {
@@ -88,21 +87,16 @@ export const ClassroomProvider = ({ children }: { children: ReactNode }) => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: classroomDataJson,
+          body: JSON.stringify(classroomData),
         }
       );
 
       if (response.ok) {
-        const createdClassroom: Classroom = await response.json();
-        setClassrooms((prevClassrooms) => [
-          ...prevClassrooms,
-          createdClassroom,
-        ]);
-      } else {
-        throw new Error("Failed to add classroom");
+        // Recargar la lista completa después de crear
+        await loadClassrooms();
       }
     } catch (error) {
-      console.error("Error adding classroom:", error);
+      console.error("Error in addClassroom:", error);
     }
   };
 
