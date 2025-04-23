@@ -16,7 +16,9 @@ const ClassroomsScreen = () => {
   }, []);
 
   return (
-    <ScrollView>
+    <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 80 }}
+    keyboardShouldPersistTaps="handled"
+  >
       <View style={{ margin: 5 }}>
         <ThemedText>Classrooms</ThemedText>
         {classrooms.map((classroom, index) => (

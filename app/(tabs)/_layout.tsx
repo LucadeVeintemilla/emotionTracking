@@ -63,7 +63,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="classrom"
         options={{
-          title: "Classrom",
+          title: "Classroom",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="book.fill" color={color} />
           ),

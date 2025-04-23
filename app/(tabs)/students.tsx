@@ -20,7 +20,9 @@ const StudentsScreen = () => {
   }, []);
 
   return (
-    <ScrollView>
+    <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 80 }}
+    keyboardShouldPersistTaps="handled"
+  >
       <View style={{ margin: 5 }}>
         <ThemedText>Students ({students.length})</ThemedText>
         {students && students.length > 0 ? (
