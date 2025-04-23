@@ -66,42 +66,45 @@ const CameraModal = ({
 
   const handleTakePicture = async () => {
     if (!cameraRef || !selectedStudent?.id || !session_id) {
-      console.log("Missing required data:", { cameraRef, selectedStudent, session_id });
       return;
     }
 
     try {
       setImageLoadError(false);
-      const photo = await cameraRef.takePictureAsync();
-      console.log("Photo taken:", photo.uri);
+      const photo = await cameraRef.takePictureAsync({
+        quality: 0.7,
+        base64: true,
+        exif: false
+      });
 
       const manipulatedPhoto = await ImageManipulator.manipulateAsync(
         photo.uri,
-        [{ rotate: 0 }],
-        { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
+        [{ resize: { width: 640 } }],
+        { 
+          compress: 0.7, 
+          format: ImageManipulator.SaveFormat.JPEG,
+          base64: true 
+        }
       );
-      console.log("Manipulated photo:", manipulatedPhoto.uri);
 
-      const imageUri = formatImageUri(manipulatedPhoto.uri);
-      console.log("Formatted URI:", imageUri);
+      const formData = new FormData();
+      formData.append('session_id', session_id);
+      formData.append('student_id', selectedStudent.id);
+      formData.append('image', {
+        uri: manipulatedPhoto.uri,
+        type: 'image/jpeg',
+        name: 'camera_image.jpg',
+      } as any);
 
-      const processedImageUrl = await processFrame({
-        image_url: imageUri.replace("file://", ""),
-        session_id,
-        student_id: selectedStudent.id,
-      });
-      console.log("Processed image URL:", processedImageUrl);
+      const processedImageUrl = await processFrame(formData);
 
       if (processedImageUrl) {
-        // Se formatea el URL para que funcione en iOS y Android
-        const normalizedUrl = normalizeImagePath(processedImageUrl);
-        const displayUri = formatImageUri(normalizedUrl);
-        const finalUri = displayUri + (displayUri.includes("?") ? "&" : "?") + `t=${Date.now()}`;
-        console.log("Final URI:", finalUri);
-        setCurrentPicture(finalUri);
+        setCurrentPicture(processedImageUrl);
+        setImageLoadError(false);
       }
+
     } catch (error) {
-      console.error("Error taking picture:", error);
+      console.error("Error in handleTakePicture:", error);
       setImageLoadError(true);
     }
   };
@@ -166,16 +169,16 @@ const CameraModal = ({
               {currentPicture && !imageLoadError ? (
                 <Image
                   source={{ 
-                    uri: currentPicture ? normalizeImagePath(currentPicture) : "",
+                    uri: currentPicture,
                     headers: { 
                       "Cache-Control": "no-cache",
                       "Pragma": "no-cache"
                     }
                   }}
                   style={styles.picture}
-                  resizeMode="cover"
+                  resizeMode="contain"
                   onError={(e) => {
-                    console.log("Image load error for URI:", currentPicture);
+                    console.error("Image loading error:", e.nativeEvent.error);
                     setImageLoadError(true);
                   }}
                 />

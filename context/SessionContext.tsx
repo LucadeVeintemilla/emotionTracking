@@ -26,15 +26,7 @@ interface SessionContextType {
     classroom_id: string;
     name: string;
   }) => Promise<void>;
-  processFrame: ({
-    image_url,
-    session_id,
-    student_id,
-  }: {
-    image_url: string;
-    session_id: string;
-    student_id: string;
-  }) => any;
+  processFrame: (formData: FormData) => any;
   getSessionStats: (session_id: string) => Promise<EmotionStats[]>;
 }
 
@@ -111,26 +103,8 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const processFrame = async ({
-    image_url,
-    session_id,
-    student_id,
-  }: {
-    image_url: string;
-    session_id: string;
-    student_id: string;
-  }) => {
+  const processFrame = async (formData: FormData) => {
     try {
-      const formData = new FormData();
-      formData.append("session_id", session_id);
-      formData.append("student_id", student_id);
-      formData.append("detector_backend", "mtcnn");
-      formData.append("image", {
-        uri: image_url,
-        type: "image/jpeg",
-        name: "image_to_process",
-      } as any);
-
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_API_URL}/emotion/process_frame`,
         {
@@ -143,22 +117,20 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
       );
 
       if (!response.ok) {
-        // throw new Error("Failed to process frame");
         console.log("Failed to process frame");
+        throw new Error("Failed to process frame");
       }
 
       const result = await response.json();
 
-      // Verificar si la respuesta contiene una imagen procesada
       if (result.processed_image) {
-        // Convertir la imagen base64 en una URL para mostrarla
         const processedImageUrl = `data:image/jpeg;base64,${result.processed_image}`;
         return processedImageUrl;
       } else {
         throw new Error("Processed image not found in response");
       }
     } catch (error) {
-      console.log("Error processing frame:", error);
+      console.error("Error processing frame:", error);
       throw error;
     }
   };
