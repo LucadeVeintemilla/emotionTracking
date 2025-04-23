@@ -32,18 +32,18 @@ export default function StatsScreen() {
       const data = await getSessionStats(id);
       setStats(data);
   
-      // Comprobar los datos en consola para depuración
+      
       console.log('Stats loaded:', data);
   
       if (Array.isArray(data) && data.length > 0) {
         data.forEach((stat) => {
           const afterRow: Record<string, any> = {
             student: getStudentName(stat.student_id),
-            ...stat.after, // Directly take 'after' emotions as they are
+            ...stat.after, 
           };
           const beforeRow: Record<string, any> = {
             student: getStudentName(stat.student_id),
-            ...stat.before, // Directly take 'before' emotions as they are
+            ...stat.before, 
           };
   
           console.log("AFTER", afterRow);
@@ -64,12 +64,11 @@ export default function StatsScreen() {
 
   return (
     <ScrollView  style={styles.container}
-    contentContainerStyle={{ paddingBottom: 60 }} // <-- Agrega este prop
+    contentContainerStyle={{ paddingBottom: 60 }} 
   >
       <ThemedText style={styles.title}>Session Statistics</ThemedText>
 
       {stats.map((stat, index) => {
-        // Asegura que las emociones estén en el mismo orden y sean las mismas para before y after
         const emotionLabels = [
           "angry",
           "fear",
@@ -81,7 +80,6 @@ export default function StatsScreen() {
         const beforeValues = emotionLabels.map((e) => stat.before[e] ?? 0);
         const afterValues = emotionLabels.map((e) => stat.after[e] ?? 0);
 
-        // Si no hay datos para mostrar, no renderizar el gráfico
         const hasData =
           beforeValues.some((v) => v > 0) || afterValues.some((v) => v > 0);
 

@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
     padding: 20,
-    paddingBottom: 80, // Add padding for button
+    paddingBottom: 80,
   },
   label: {
     fontSize: 16,
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     width: "100%",
-    height: "70%", // Fixed height instead of flex: 1
+    height: "70%", 
     marginBottom: 20,
   },
   list: {
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingVertical: 10,
     backgroundColor: "transparent",
-    marginTop: "auto", // Push to bottom of available space
+    marginTop: "auto", 
   },
 });
 

@@ -5,7 +5,7 @@ export interface Classroom {
   id: string;
   name: string;
   professor_id: string;
-  students: string[]; // Array of student IDs
+  students: string[]; 
 }
 
 interface ClassroomContextType {
@@ -92,7 +92,6 @@ export const ClassroomProvider = ({ children }: { children: ReactNode }) => {
       );
 
       if (response.ok) {
-        // Recargar la lista completa después de crear
         await loadClassrooms();
       }
     } catch (error) {

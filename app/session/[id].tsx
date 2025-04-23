@@ -156,14 +156,14 @@ const SessionDetailScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white", // Asegura fondo opaco
+    backgroundColor: "white", 
   },
   scrollContainer: {
     flex: 1,
   },
   scrollContent: {
     padding: 10,
-    paddingBottom: 120, // Asegura espacio para los botones
+    paddingBottom: 120, 
   },
   sessionName: {
     fontSize: 24,
@@ -188,8 +188,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderTopWidth: 1,
     borderTopColor: '#eee',
-    elevation: 10, // Para que esté por encima del tab bar en Android
-    shadowColor: "#000", // Para iOS
+    elevation: 10, 
+    shadowColor: "#000", 
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,

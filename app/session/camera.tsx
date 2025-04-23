@@ -49,7 +49,7 @@ const CameraModal = ({
 
   const normalizeImagePath = (path: string) => {
     if (!path) return "";
-    // Normalizar separadores de ruta y asegurar formato URL correcto
+    // Solución fue arreglar el path 
     return path.replace(/\\/g, '/').replace(/\/+/g, '/');
   };
 
@@ -93,7 +93,7 @@ const CameraModal = ({
       console.log("Processed image URL:", processedImageUrl);
 
       if (processedImageUrl) {
-        // Normaliza y formatea la URL final
+        // Se formatea el URL para que funcione en iOS y Android
         const normalizedUrl = normalizeImagePath(processedImageUrl);
         const displayUri = formatImageUri(normalizedUrl);
         const finalUri = displayUri + (displayUri.includes("?") ? "&" : "?") + `t=${Date.now()}`;

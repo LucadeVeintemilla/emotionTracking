@@ -14,7 +14,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Classroom, useClassroom } from "@/context/ClassroomContext";
 
-// Ensure Classroom interface has id defined as string | number
+
 type SafeClassroom = Omit<Classroom, 'id'> & { id: string | number };
 import { router } from "expo-router";
 import { Session, useSession } from "@/context/SessionContext";

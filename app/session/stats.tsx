@@ -32,7 +32,7 @@ export default function StatsScreen() {
                     const data = await getSessionStats(id);
                     setStats(data);
 
-                    // Mostrar tabla en consola: after por emoción y estudiante
+                    
                     const table = data.map(stat => {
                         const row: Record<string, any> = {
                             student: getStudentName(stat.student_id),
@@ -42,8 +42,7 @@ export default function StatsScreen() {
                         }
                         return row;
                     });
-                    // Imprime la tabla en consola
-                    // Ejemplo: | student | happy | sad | angry | surprised | neutral |
+                    
                     console.log("Tabla de emociones AFTER por estudiante:");
                     console.table(table);
                 }
