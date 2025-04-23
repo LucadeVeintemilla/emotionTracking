@@ -11,6 +11,7 @@ import {
   Pressable,
   Keyboard,
   TouchableWithoutFeedback,
+  Platform,
 } from "react-native";
 import * as ImageManipulator from "expo-image-manipulator";
 import { IconSymbol } from "@/components/ui/IconSymbol";
@@ -41,10 +42,27 @@ const CameraModal = ({
   const [permission, requestPermission] = useCameraPermissions();
   const [currentPicture, setCurrentPicture] = useState<string | null>(null);
   const [cameraRef, setCameraRef] = useState<any>(null);
-
+  const [imageLoadError, setImageLoadError] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<User | null>(null);
 
   const colorScheme = useColorScheme() ?? "light";
+
+  const normalizeImagePath = (path: string) => {
+    if (!path) return "";
+    // Normalizar separadores de ruta y asegurar formato URL correcto
+    return path.replace(/\\/g, '/').replace(/\/+/g, '/');
+  };
+
+  const formatImageUri = (uri: string) => {
+    const normalizedUri = normalizeImagePath(uri);
+    
+    if (Platform.OS === "ios") {
+      if (!normalizedUri.startsWith("file://") && !normalizedUri.startsWith("http")) {
+        return "file://" + normalizedUri;
+      }
+    }
+    return normalizedUri;
+  };
 
   const handleTakePicture = async () => {
     if (!cameraRef || !selectedStudent?.id || !session_id) {
@@ -53,22 +71,38 @@ const CameraModal = ({
     }
 
     try {
+      setImageLoadError(false);
       const photo = await cameraRef.takePictureAsync();
+      console.log("Photo taken:", photo.uri);
 
       const manipulatedPhoto = await ImageManipulator.manipulateAsync(
         photo.uri,
         [{ rotate: 0 }],
         { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
       );
+      console.log("Manipulated photo:", manipulatedPhoto.uri);
+
+      const imageUri = formatImageUri(manipulatedPhoto.uri);
+      console.log("Formatted URI:", imageUri);
 
       const processedImageUrl = await processFrame({
-        image_url: manipulatedPhoto.uri.replace("file://", ""),
+        image_url: imageUri.replace("file://", ""),
         session_id,
         student_id: selectedStudent.id,
       });
-      if (processedImageUrl) setCurrentPicture(processedImageUrl);
+      console.log("Processed image URL:", processedImageUrl);
+
+      if (processedImageUrl) {
+        // Normaliza y formatea la URL final
+        const normalizedUrl = normalizeImagePath(processedImageUrl);
+        const displayUri = formatImageUri(normalizedUrl);
+        const finalUri = displayUri + (displayUri.includes("?") ? "&" : "?") + `t=${Date.now()}`;
+        console.log("Final URI:", finalUri);
+        setCurrentPicture(finalUri);
+      }
     } catch (error) {
       console.error("Error taking picture:", error);
+      setImageLoadError(true);
     }
   };
 
@@ -129,10 +163,27 @@ const CameraModal = ({
               />
             </View>
             <View style={styles.pictureContainer}>
-              <Image
-                source={{ uri: currentPicture ?? "" }}
-                style={styles.picture}
-              />
+              {currentPicture && !imageLoadError ? (
+                <Image
+                  source={{ 
+                    uri: currentPicture ? normalizeImagePath(currentPicture) : "",
+                    headers: { 
+                      "Cache-Control": "no-cache",
+                      "Pragma": "no-cache"
+                    }
+                  }}
+                  style={styles.picture}
+                  resizeMode="cover"
+                  onError={(e) => {
+                    console.log("Image load error for URI:", currentPicture);
+                    setImageLoadError(true);
+                  }}
+                />
+              ) : (
+                <View style={[styles.picture, { backgroundColor: "#eee", justifyContent: "center", alignItems: "center" }]}>
+                  <Text>{imageLoadError ? "Error loading image" : "No image"}</Text>
+                </View>
+              )}
             </View>
             <View style={styles.scoreInputContainer}>
               <Dropdown
@@ -153,6 +204,8 @@ const CameraModal = ({
                   if (!item?.id) return;
                   const student = classroomStudents.find(s => s?.id === item.id);
                   setSelectedStudent(student || null);
+                  setCurrentPicture(null);
+                  setImageLoadError(false);
                 }}
               />
             </View>
@@ -220,58 +273,58 @@ const styles = StyleSheet.create({
   },
   videoContainer: {
     flex: 1,
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'white',
+    width: "100%",
+    height: "100%",
+    backgroundColor: "white",
     borderRadius: 10,
     padding: 10,
     marginTop: 80,
   },
   cameraContainer: {
     flex: 0.5,
-    width: '100%',
+    width: "100%",
     borderWidth: 1,
-    borderColor: 'gray',
-    backgroundColor: 'lightgray',
+    borderColor: "gray",
+    backgroundColor: "lightgray",
     marginBottom: 10,
     borderRadius: 8,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   pictureContainer: {
     flex: 0.5,
-    width: '100%',
+    width: "100%",
     borderWidth: 1,
-    borderColor: 'gray',
+    borderColor: "gray",
     marginBottom: 10,
     borderRadius: 8,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   camera: {
     width: "100%",
     height: "100%",
   },
   controlsContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 10,
   },
   recordButton: {
     padding: 10,
   },
   scoreInputContainer: {
-    width: '100%',
+    width: "100%",
     padding: 5,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: "#f8f8f8",
     borderRadius: 8,
     marginBottom: 5,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 5,
   },
   dropdown: {
     flex: 2,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 5,
     padding: 4,
     height: 40,
@@ -290,7 +343,6 @@ const styles = StyleSheet.create({
     height: 20,
   },
   inputSearchStyle: {
-    height: 40,
     fontSize: 16,
   },
 });

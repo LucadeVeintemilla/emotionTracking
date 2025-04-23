@@ -36,6 +36,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const [students, setStudents] = useState<User[]>([]);
 
+  const getImageUrl = (path: string) => {
+    if (!path) return "";
+    // Normalize path separators and ensure proper URL format
+    const normalizedPath = path.replace(/\\/g, '/');
+    return `${process.env.EXPO_PUBLIC_API_URL}/user/${normalizedPath}`;
+  };
+
   const loadStudents = async (): Promise<void> => {
     try {
       if (!token) {
@@ -63,7 +70,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           gender: student.gender,
           email: student.email,
           role: student.role,
-          images: student.images,
+          // Normalize image paths
+          images: student.images.map((img: string) => img.replace(/\\/g, '/')),
         }));
         setStudents(formattedStudents);
       } else {
@@ -145,14 +153,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         formData.append("password", userData.password);
         if (userData.images.length === 1) {
           const image = userData.images[0];
+          const cleanUri = image.uri.replace("file://", "").replace(/\\/g, '/');
           formData.append("image", {
-            uri: image.uri.replace("file://", ""),
+            uri: cleanUri,
             type: image.mimeType || "image/jpeg",
-            name: "profile_picture.jpg"
+            name: `professor_${Date.now()}.jpg`
           } as any);
         }
       } else {
-        // Para estudiantes, adjuntar múltiples imágenes
         userData.images.forEach((image, index) => {
           formData.append(`image_${index}`, {
             uri: image.uri.replace("file://", ""),
@@ -193,14 +201,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           if (userResponse.ok) {
             const user = await userResponse.json();
             setUser({
+              ...user,
               id: user._id,
-              name: user.name,
-              last_name: user.last_name,
-              age: parseInt(user.age, 10),
-              gender: user.gender,
-              email: user.email,
-              role: user.role,
-              images: user.images,
+              images: user.images.map((img: string) => img.replace(/\\/g, '/'))
             });
           } else {
             throw new Error("Failed to fetch user data");
@@ -212,7 +215,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error("Registration failed");
       }
     } catch (error) {
-      console.error(error);
+      console.error("Register error:", error);
       throw error;
     }
   };
