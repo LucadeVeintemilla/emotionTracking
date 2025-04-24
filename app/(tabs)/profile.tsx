@@ -44,11 +44,11 @@ export default function ProfileScreen() {
           <ThemedText>Género: {user?.gender}</ThemedText>
           <ThemedText>Email: {user?.email}</ThemedText>
           <ThemedText>Docente</ThemedText>
-          <Button title="Log out" onPress={handleLogout} />
+          <Button title="Cerrar Sesión" onPress={handleLogout} />
         </View>
       ) : (
         <View style={styles.profileInfoContainer}>
-          <ThemedText>Please log in to see your profile.</ThemedText>
+          <ThemedText>Inicie sesión para ver su perfil.</ThemedText>
           <Link href="/login" style={styles.button}>
             Log in
           </Link>

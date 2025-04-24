@@ -55,23 +55,18 @@ export const StudentCard = ({ student }: { student: User }) => {
         pathname: "/student/[id]",
         params: { id: student.id }
       }}
-      style={{ margin: 5 }}
+      style={{ margin: 10 }}
     >
       <ThemedView style={styles.container}>
-        <View style={styles.containerImages}>
-          {student.images.map((image, index) => (
-            <Image
-              key={index}
-              source={{ uri: image ? getImageUrl(image) : "" }}
-              style={styles.profileImage}
-            />
-          ))}
-        </View>
+        <Image
+          source={{ uri: student.images[0] ? getImageUrl(student.images[0]) : "" }}
+          style={styles.profileImage}
+        />
         <View style={styles.containerText}>
-          <ThemedText>
+          <ThemedText style={styles.studentName}>
             {student.name} {student.last_name}
           </ThemedText>
-          <ThemedText>{student.email}</ThemedText>
+          <ThemedText style={styles.studentEmail}>{student.email}</ThemedText>
         </View>
       </ThemedView>
     </Link>
@@ -85,25 +80,35 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    padding: 5,
-    borderRadius: 10,
+    padding: 15,
+    borderRadius: 15,
+    backgroundColor: 'white',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    elevation: 4,
+    marginVertical: 5,
   },
   containerText: {
     flex: 1,
-    flexDirection: "column",
-    alignItems: "flex-start",
-    justifyContent: "center",
-  },
-  containerImages: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "center",
+    marginLeft: 15,
   },
   profileImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 50,
-    marginLeft: -15,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
   },
+  studentName: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 5,
+  },
+  studentEmail: {
+    fontSize: 14,
+    color: '#666',
+  }
 });

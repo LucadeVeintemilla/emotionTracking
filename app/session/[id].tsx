@@ -97,32 +97,31 @@ const SessionDetailScreen = () => {
     <ThemedView style={styles.container}>
       <ScrollView 
         style={styles.scrollContainer}
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: 140 }]}
+        contentContainerStyle={[styles.scrollContent]}
       >
-        <ThemedText style={styles.sessionName}>{session.name}</ThemedText>
-        <ThemedText style={{ marginBottom: 20 }}>{formattedDate}</ThemedText>
-        <ThemedText style={styles.teacherName}>
-          Docente: {user!.name} {user!.last_name}
-        </ThemedText>
+        <View style={styles.headerCard}>
+          <ThemedText style={styles.sessionName}>{session.name}</ThemedText>
+          <ThemedText style={styles.dateText}>{formattedDate}</ThemedText>
+          <View style={styles.teacherContainer}>
+            <ThemedText style={styles.teacherLabel}>Docente</ThemedText>
+            <ThemedText style={styles.teacherName}>
+              {user!.name} {user!.last_name}
+            </ThemedText>
+          </View>
+          <View style={styles.classContainer}>
+            <ThemedText style={styles.classLabel}>Clase</ThemedText>
+            <ThemedText style={styles.className}>
+              {sessionClassroom!.name}
+            </ThemedText>
+          </View>
+        </View>
 
-        <ThemedText style={styles.teacherName}>
-          Clase: {sessionClassroom!.name}
-        </ThemedText>
-
-        <ThemedText style={styles.teacherName}>Estudiantes:</ThemedText>
-
+        <ThemedText style={styles.studentsTitle}>Estudiantes</ThemedText>
         {classroomStudents.map((student, index) => (
           <View key={`session-student-${student.id}`}>
             <StudentCard student={student} key={index} />
-            {index != classroomStudents.length - 1 && (
-              <View
-                style={{
-                  width: "80%",
-                  height: 1,
-                  backgroundColor: "white",
-                  alignSelf: "center",
-                }}
-              />
+            {index !== classroomStudents.length - 1 && (
+              <View style={styles.separator} />
             )}
           </View>
         ))}
@@ -156,57 +155,108 @@ const SessionDetailScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white", 
+    backgroundColor: '#f5f5f5',
   },
   scrollContainer: {
     flex: 1,
   },
   scrollContent: {
-    padding: 10,
-    paddingBottom: 120, 
+    padding: 16,
+    paddingBottom: 140,
+  },
+  headerCard: {
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 40,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   sessionName: {
-    fontSize: 24,
+    fontSize: 25,
     fontWeight: "bold",
     marginBottom: 10,
+    textAlign: 'center',
+    color: '#2c3e50',
+  },
+  dateText: {
+    fontSize: 12,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  teacherContainer: {
+    alignItems: 'center',
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+    marginBottom: 16,
+  },
+  teacherLabel: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 4,
   },
   teacherName: {
-    fontSize: 18,
-    marginBottom: 20,
+    fontSize: 15,
+    fontWeight: "600",
+    color: '#2c3e50',
   },
-  buttonContainer: {
-    padding: 20,
-    backgroundColor: 'transparent',
-    width: '100%',
-    position: 'absolute',
-    bottom: 0,
+  classContainer: {
+    alignItems: 'center',
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+  },
+  classLabel: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 4,
+  },
+  className: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: '#2c3e50',
+  },
+  studentsTitle: {
+    fontSize: 24,
+    fontWeight: "600",
+    marginBottom: 20,
+    color: '#2c3e50',
+    paddingHorizontal: 4,
+  },
+  separator: {
+    width: "90%",
+    height: 1,
+    backgroundColor: "#eee",
+    alignSelf: "center",
+    marginVertical: 8,
   },
   footer: {
     width: '100%',
     backgroundColor: 'white',
-    paddingVertical: 10,
+    paddingVertical: 50,
     paddingHorizontal: 20,
     borderTopWidth: 1,
     borderTopColor: '#eee',
-    elevation: 10, 
-    shadowColor: "#000", 
+    elevation: 10,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    position: 'absolute', 
-    bottom: 60,           
-    left: 0, 
-  },
-  buttonGroup: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-  },
-  buttonSpacer: {
-    width: 20,
+    position: 'absolute',
+    bottom: 20,
+    left: 0,
+    zIndex: 1000,
   },
   buttonSpacerVertical: {
-    height: 12,
+    height: 10
   },
 });
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Image, ScrollView, View } from "react-native";
+import { StyleSheet, Image, ScrollView, View, Platform } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { useAuth, User } from "@/context/AuthContext";
@@ -20,7 +20,17 @@ const StudentDetailScreen = () => {
   }, [params.id, students]);
 
   const getImageUrl = (path: string) => {
-    return `${process.env.EXPO_PUBLIC_API_URL}/user/${path}`;
+    if (!path) return "";
+    const normalizedPath = path.replace(/\\/g, '/');
+    const baseUrl = process.env.EXPO_PUBLIC_API_URL;
+    let fullUrl = `${baseUrl}/user/${normalizedPath}`;
+    
+    if (Platform.OS === 'android') {
+      fullUrl = fullUrl.replace(/([^:])\/\//g, '$1/');
+      fullUrl = fullUrl.trim();
+    }
+
+    return fullUrl;
   };
 
   if (!student) {
@@ -33,22 +43,37 @@ const StudentDetailScreen = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.imageContainer}>
-        {student.images.map((image, index) => (
-          <Image
-            key={index}
-            source={{ uri: getImageUrl(image) }}
-            style={styles.profileImage}
-          />
-        ))}
+      <View style={styles.card}>
+        <Image
+          source={{ uri: student.images[0] ? getImageUrl(student.images[0]) : "" }}
+          style={styles.profileImage}
+        />
+        
+        <View style={styles.infoContainer}>
+          <ThemedText style={styles.name}>
+            {student.name} {student.last_name}
+          </ThemedText>
+          
+          <View style={styles.infoRow}>
+            <ThemedText style={styles.label}>Email:</ThemedText>
+            <ThemedText style={styles.value}>{student.email}</ThemedText>
+          </View>
+          
+          <View style={styles.infoRow}>
+            <ThemedText style={styles.label}>Edad:</ThemedText>
+            <ThemedText style={styles.value}>{student.age} años</ThemedText>
+          </View>
+          
+          <View style={styles.infoRow}>
+            <ThemedText style={styles.label}>Género:</ThemedText>
+            <ThemedText style={styles.value}>{student.gender}</ThemedText>
+          </View>
+          
+          <View style={styles.roleContainer}>
+            <ThemedText style={styles.role}>Estudiante</ThemedText>
+          </View>
+        </View>
       </View>
-      <ThemedText style={styles.name}>
-        {student.name} {student.last_name}
-      </ThemedText>
-      <ThemedText>Email: {student.email}</ThemedText>
-      <ThemedText>Edad: {student.age}</ThemedText>
-      <ThemedText>Género: {student.gender}</ThemedText>
-      <ThemedText>Estudiante</ThemedText>
     </ScrollView>
   );
 };
@@ -59,23 +84,68 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     alignItems: "center",
-    justifyContent: "flex-start",
     padding: 20,
+    backgroundColor: '#f5f5f5',
   },
-  imageContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 20,
+  card: {
+    width: '100%',
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginHorizontal: 5,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    marginBottom: 20,
+  },
+  infoContainer: {
+    width: '100%',
+    alignItems: 'center',
   },
   name: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  label: {
+    fontSize: 18,
+    fontWeight: '600',
+    width: '30%',
+    color: '#666',
+  },
+  value: {
+    fontSize: 18,
+    flex: 1,
+  },
+  roleContainer: {
+    marginTop: 20,
+    backgroundColor: '#e8f4ff',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+  },
+  role: {
+    fontSize: 16,
+    color: '#0066cc',
+    fontWeight: '600',
   },
 });

@@ -159,13 +159,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           } as any);
         }
       } else {
-        userData.images.forEach((image, index) => {
-          formData.append(`image_${index}`, {
-            uri: image.uri.replace("file://", ""),
-            type: image.mimeType || "image/jpeg",
-            name: `student_image_${index}.jpg`
-          } as any);
-        });
+        const image = userData.images[0];
+        formData.append("image_0", {
+          uri: image.uri.replace("file://", ""),
+          type: image.mimeType || "image/jpeg",
+          name: `student_image.jpg`
+        } as any);
       }
 
       const response = await fetch(
