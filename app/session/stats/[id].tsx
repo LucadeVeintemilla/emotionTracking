@@ -7,6 +7,44 @@ import { useLocalSearchParams } from 'expo-router';
 import { BarChart } from 'react-native-chart-kit';
 import { useAuth } from '@/context/AuthContext';
 
+const EMOTION_LABELS = [
+  "Enojo",
+  "Miedo", 
+  "Feliz",
+  "Triste",
+  "Sorpresa",
+  "Neutral"
+] as const;
+
+const EMOTION_KEYS = [
+  "angrys",
+  "fear", 
+  "happy",
+  "sad", 
+  "surprise",
+  "neutral"
+] as const;
+
+type EmotionKey = typeof EMOTION_KEYS[number];
+
+const commonChartConfig = {
+  backgroundColor: '#fff',
+  backgroundGradientFrom: '#fff',
+  backgroundGradientTo: '#fff',
+  decimalPlaces: 0,
+  labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+  barPercentage: 0.5,
+  propsForBackgroundLines: {
+    strokeWidth: 1,
+    stroke: "#e3e3e3",
+    strokeDasharray: "0",
+  },
+  propsForLabels: {
+    fontSize: 12,
+    fontWeight: "bold",
+  }
+};
+
 export default function StatsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { getSessionStats } = useSession();
@@ -32,7 +70,6 @@ export default function StatsScreen() {
       const data = await getSessionStats(id);
       setStats(data);
   
-      
       console.log('Stats loaded:', data);
   
       if (Array.isArray(data) && data.length > 0) {
@@ -62,26 +99,152 @@ export default function StatsScreen() {
     return student ? `${student.name} ${student.last_name}` : 'Unknown';
   };
 
+  const calculateTotalStats = (stats: EmotionStats[]) => {
+    const initialTotals = EMOTION_KEYS.reduce((acc, key) => ({
+      ...acc,
+      [key]: 0
+    }), {} as Record<EmotionKey, number>);
+
+    return stats.reduce((totals, stat) => ({
+      totalBefore: EMOTION_KEYS.reduce((acc, key) => ({
+        ...acc,
+        [key]: (totals.totalBefore[key] || 0) + (stat.before[key] || 0)
+      }), {...initialTotals}),
+      totalAfter: EMOTION_KEYS.reduce((acc, key) => ({
+        ...acc,
+        [key]: (totals.totalAfter[key] || 0) + (stat.after[key] || 0)
+      }), {...initialTotals})
+    }), { totalBefore: initialTotals, totalAfter: initialTotals });
+  };
+
   return (
-    <ScrollView  style={styles.container}
-    contentContainerStyle={{ paddingBottom: 60 }} 
-  >
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 60 }}>
       <ThemedText style={styles.title}>Estadísticas de sesión</ThemedText>
 
-      {stats.map((stat, index) => {
-        const emotionLabels = [
-          "angry",
-          "fear",
-          "happy",
-          "sad",
-          "surprise",
-          "neutral",
-        ];
-        const beforeValues = emotionLabels.map((e) => stat.before[e] ?? 0);
-        const afterValues = emotionLabels.map((e) => stat.after[e] ?? 0);
+      {/* Gráfico General */}
+      {stats.length > 0 && (
+        <ThemedView style={styles.statCard}>
+          <ThemedText style={[styles.studentName, { textAlign: 'center' }]}>
+            Estadísticas Generales
+          </ThemedText>
+          <View style={styles.chartContainer}>
+            <ThemedText style={{ fontWeight: "bold", marginBottom: 4 }}>Before</ThemedText>
+            <BarChart
+              data={{
+                labels: Array.from(EMOTION_LABELS),
+                datasets: [{
+                  data: EMOTION_KEYS.map(key => calculateTotalStats(stats).totalBefore[key])
+                }]
+              }}
+              width={Dimensions.get('window').width - 40}
+              height={110}
+              yAxisLabel=""
+              yAxisSuffix=""
+              fromZero
+              showBarTops={false}
+              withHorizontalLabels={true}
+              withVerticalLabels={true}
+              chartConfig={{
+                ...commonChartConfig,
+                color: (opacity = 1) => `rgba(33, 150, 243, ${opacity})`
+              }}
+              style={{
+                marginVertical: 4,
+                borderRadius: 8,
+                paddingRight: 0,
+                paddingLeft: 0,
+              }}
+              withCustomBarColorFromData={false}
+              flatColor={true}
+            />
+            <View
+              style={{
+                flexDirection: "row",
+                width: Dimensions.get('window').width - 40,
+                marginTop: -8,
+                marginBottom: 8,
+              }}
+            >
+              {EMOTION_LABELS.map((label, i) => (
+                <View
+                  key={label}
+                  style={{
+                    flex: 1,
+                    alignItems: "center",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <ThemedText style={{ fontSize: 12, textAlign: "center" }}>
+                    {label}
+                  </ThemedText>
+                </View>
+              ))}
+            </View>
+            <ThemedText style={{ fontWeight: "bold", marginTop: 8, marginBottom: 4 }}>After</ThemedText>
+            <BarChart
+              data={{
+                labels: Array.from(EMOTION_LABELS),
+                datasets: [{
+                  data: EMOTION_KEYS.map(key => calculateTotalStats(stats).totalAfter[key])
+                }]
+              }}
+              width={Dimensions.get('window').width - 40}
+              height={110}
+              yAxisLabel=""
+              yAxisSuffix=""
+              fromZero
+              showBarTops={false}
+              withHorizontalLabels={true}
+              withVerticalLabels={true}
+              chartConfig={{
+                ...commonChartConfig,
+                color: (opacity = 1) => `rgba(244, 67, 54, ${opacity})`
+              }}
+              style={{
+                marginVertical: 4,
+                borderRadius: 8,
+                paddingRight: 0,
+                paddingLeft: 0,
+              }}
+              withCustomBarColorFromData={false}
+              flatColor={true}
+            />
+            <View
+              style={{
+                flexDirection: "row",
+                width: Dimensions.get('window').width - 40,
+                marginTop: -8,
+                marginBottom: 8,
+              }}
+            >
+              {EMOTION_LABELS.map((label, i) => (
+                <View
+                  key={label}
+                  style={{
+                    flex: 1,
+                    alignItems: "center",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <ThemedText style={{ fontSize: 12, textAlign: "center" }}>
+                    {label}
+                  </ThemedText>
+                </View>
+              ))}
+            </View>
+          </View>
+        </ThemedView>
+      )}
 
-        const hasData =
-          beforeValues.some((v) => v > 0) || afterValues.some((v) => v > 0);
+      <ThemedText style={[styles.title, { textAlign: 'center', marginTop: 5, marginBottom :30 ,fontSize: 18 }]}>
+        Estadísticas por Estudiante
+      </ThemedText>
+
+      {/* Gráficos por estudiante */}
+      {stats.map((stat, index) => {
+        const beforeValues = EMOTION_KEYS.map((e) => stat.before[e] ?? 0);
+        const afterValues = EMOTION_KEYS.map((e) => stat.after[e] ?? 0);
+        const hasData = beforeValues.some((v) => v > 0) || afterValues.some((v) => v > 0);
 
         if (!hasData) {
           return (
@@ -94,7 +257,7 @@ export default function StatsScreen() {
           );
         }
 
-       return (
+        return (
           <ThemedView key={index} style={styles.statCard}>
             <ThemedText style={styles.studentName}>
               {getStudentName(stat.student_id)}
@@ -103,9 +266,7 @@ export default function StatsScreen() {
               <ThemedText style={{ fontWeight: "bold", marginBottom: 4 }}>Before</ThemedText>
               <BarChart
                 data={{
-                  labels: emotionLabels.map(
-                    (e) => e.charAt(0).toUpperCase() + e.slice(1)
-                  ),
+                  labels: Array.from(EMOTION_LABELS),
                   datasets: [
                     {
                       data: beforeValues,
@@ -121,22 +282,8 @@ export default function StatsScreen() {
                 withHorizontalLabels={true}
                 withVerticalLabels={true}
                 chartConfig={{
-                  backgroundColor: '#fff',
-                  backgroundGradientFrom: '#fff',
-                  backgroundGradientTo: '#fff',
-                  decimalPlaces: 0,
+                  ...commonChartConfig,
                   color: (opacity = 1) => `rgba(33, 150, 243, ${opacity})`,
-                  labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                  barPercentage: 0.5,
-                  propsForBackgroundLines: {
-                    strokeWidth: 1,
-                    stroke: "#e3e3e3",
-                    strokeDasharray: "0",
-                  },
-                  propsForLabels: {
-                    fontSize: 12,
-                    fontWeight: "bold",
-                  },
                 }}
                 style={{
                   marginVertical: 4,
@@ -155,7 +302,7 @@ export default function StatsScreen() {
                   marginBottom: 8,
                 }}
               >
-                {emotionLabels.map((label, i) => (
+                {EMOTION_LABELS.map((label, i) => (
                   <View
                     key={label}
                     style={{
@@ -165,7 +312,7 @@ export default function StatsScreen() {
                     }}
                   >
                     <ThemedText style={{ fontSize: 12, textAlign: "center" }}>
-                      {label.charAt(0).toUpperCase() + label.slice(1)}
+                      {label}
                     </ThemedText>
                   </View>
                 ))}
@@ -173,9 +320,7 @@ export default function StatsScreen() {
               <ThemedText style={{ fontWeight: "bold", marginTop: 8, marginBottom: 4 }}>After</ThemedText>
               <BarChart
                 data={{
-                  labels: emotionLabels.map(
-                    (e) => e.charAt(0).toUpperCase() + e.slice(1)
-                  ),
+                  labels: Array.from(EMOTION_LABELS),
                   datasets: [
                     {
                       data: afterValues,
@@ -191,22 +336,8 @@ export default function StatsScreen() {
                 withHorizontalLabels={true}
                 withVerticalLabels={true}
                 chartConfig={{
-                  backgroundColor: '#fff',
-                  backgroundGradientFrom: '#fff',
-                  backgroundGradientTo: '#fff',
-                  decimalPlaces: 0,
+                  ...commonChartConfig,
                   color: (opacity = 1) => `rgba(244, 67, 54, ${opacity})`,
-                  labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                  barPercentage: 0.5,
-                  propsForBackgroundLines: {
-                    strokeWidth: 1,
-                    stroke: "#e3e3e3",
-                    strokeDasharray: "0",
-                  },
-                  propsForLabels: {
-                    fontSize: 12,
-                    fontWeight: "bold",
-                  },
                 }}
                 style={{
                   marginVertical: 4,
@@ -225,7 +356,7 @@ export default function StatsScreen() {
                   marginBottom: 8,
                 }}
               >
-                {emotionLabels.map((label, i) => (
+                {EMOTION_LABELS.map((label, i) => (
                   <View
                     key={label}
                     style={{
@@ -235,7 +366,7 @@ export default function StatsScreen() {
                     }}
                   >
                     <ThemedText style={{ fontSize: 12, textAlign: "center" }}>
-                      {label.charAt(0).toUpperCase() + label.slice(1)}
+                      {label}
                     </ThemedText>
                   </View>
                 ))}
