@@ -24,8 +24,8 @@ export default function Login() {
       router.replace("/profile");
     } catch (error) {
       Alert.alert(
-        "Login failed",
-        "Please check your credentials and try again."
+        "Error al iniciar sesión",
+        "Por favor, revise sus credenciales y vuelva a intentarlo"
       );
     }
   };
@@ -36,7 +36,7 @@ export default function Login() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView contentContainerStyle={styles.container}>
-        <Text>Login</Text>
+        <Text>Acceso</Text>
         <TextInput
           keyboardType="email-address"
           style={styles.input}
@@ -48,15 +48,15 @@ export default function Login() {
         <TextInput
           keyboardType="default"
           style={styles.input}
-          placeholder="Password"
+          placeholder="Contraseña"
           placeholderTextColor="#888"
           value={password}
           onChangeText={setPassword}
           secureTextEntry
         />
-        <Button title="Login" onPress={handleLogin} />
+        <Button title="Iniciar sesión" onPress={handleLogin} />
         <Button
-          title="Don't have an account? Register"
+          title="¿No tienes una cuenta? Regístrate"
           onPress={() => router.navigate("/register")}
         />
       </ScrollView>

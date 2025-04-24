@@ -20,7 +20,7 @@ const ClassroomsScreen = () => {
     keyboardShouldPersistTaps="handled"
   >
       <View style={{ margin: 5 }}>
-        <ThemedText>Classrooms</ThemedText>
+        <ThemedText>Clases</ThemedText>
         {classrooms.map((classroom, index) => (
           <ClassroomCard classroom={classroom} key={index} />
         ))}

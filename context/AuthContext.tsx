@@ -38,7 +38,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const getImageUrl = (path: string) => {
     if (!path) return "";
-    // Normalize path separators and ensure proper URL format
     const normalizedPath = path.replace(/\\/g, '/');
     return `${process.env.EXPO_PUBLIC_API_URL}/user/${normalizedPath}`;
   };
@@ -70,7 +69,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           gender: student.gender,
           email: student.email,
           role: student.role,
-          // Normalize image paths
           images: student.images.map((img: string) => img.replace(/\\/g, '/')),
         }));
         setStudents(formattedStudents);

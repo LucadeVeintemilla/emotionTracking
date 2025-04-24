@@ -45,10 +45,10 @@ const ClassroomDetailScreen = () => {
       <ThemedText style={styles.classroomName}>{classroom.name}</ThemedText>
 
       <ThemedText style={styles.teacherName}>
-        Professor: {user!.name} {user!.last_name}
+        Docente: {user!.name} {user!.last_name}
       </ThemedText>
 
-      <ThemedText style={styles.teacherName}>Students:</ThemedText>
+      <ThemedText style={styles.teacherName}>Estudiantes:</ThemedText>
       <ScrollView>
         {classroomStudents.map((student) => (
           <StudentCard student={student} key={student.id} />

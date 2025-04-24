@@ -47,7 +47,7 @@ function RootLayoutNav() {
       <Stack.Screen
         name="login"
         options={{
-          title: "Sign In",
+          title: "Iniciar Sesión",
           headerShown: true,
           presentation: "card",
         }}
@@ -55,7 +55,7 @@ function RootLayoutNav() {
       <Stack.Screen
         name="register"
         options={{
-          title: "Sign Up",
+          title: "Registrarse",
           headerShown: true,
           presentation: "card",
         }}
@@ -63,7 +63,7 @@ function RootLayoutNav() {
       <Stack.Screen
         name="create-classroom"
         options={{
-          title: "Create Classroom",
+          title: "Crear Clase",
           headerShown: true,
           presentation: "modal",
         }}
@@ -71,7 +71,7 @@ function RootLayoutNav() {
       <Stack.Screen
         name="create-session"
         options={{
-          title: "Create Session",
+          title: "Crear Sesión",
           headerShown: true,
           presentation: "modal",
         }}
@@ -79,7 +79,7 @@ function RootLayoutNav() {
       <Stack.Screen
         name="create-student"
         options={{
-          title: "Create Student",
+          title: "Crear Estudiante",
           headerShown: true,
           presentation: "modal",
         }}
@@ -87,7 +87,7 @@ function RootLayoutNav() {
       <Stack.Screen
         name="student/[id]"
         options={{
-          title: "student",
+          title: "Estudiante",
           headerShown: true,
           presentation: "modal",
         }}
@@ -95,7 +95,7 @@ function RootLayoutNav() {
       <Stack.Screen
         name="classroom/[id]"
         options={{
-          title: "classroom",
+          title: "Clase",
           headerShown: true,
           presentation: "modal",
         }}
@@ -103,7 +103,7 @@ function RootLayoutNav() {
       <Stack.Screen
         name="session/[id]"
         options={{
-          title: "session",
+          title: "Sesión",
           headerShown: true,
           presentation: "card",
         }}
@@ -111,7 +111,7 @@ function RootLayoutNav() {
       <Stack.Screen
         name="session/stats/[id]"
         options={{
-          title: "Emotion Statistics",
+          title: "Estadísticas de Emociones",
           headerShown: true,
           presentation: "modal",
         }}

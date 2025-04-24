@@ -22,18 +22,18 @@ export default function DashboardScreen() {
       keyboardShouldPersistTaps="handled"
     >
       <View style={styles.container}>
-        <ThemedText style={styles.title}>Sessions Analysis</ThemedText>
+        <ThemedText style={styles.title}>Análisis de Sesiones</ThemedText>
         
         <View style={styles.filterContainer}>
           <Dropdown
             style={styles.dropdown}
             data={[
-              { id: null, name: "All Sessions" },
+              { id: null, name: "Todas las Sesiones" },
               ...classrooms.map(c => ({ id: c.id, name: c.name }))
             ]}
             labelField="name"
             valueField="id"
-            placeholder="Filter by Classroom"
+            placeholder="Filtrar por Clase"
             value={selectedClassroomId}
             onChange={item => setSelectedClassroomId(item.id)}
             placeholderStyle={styles.dropdownPlaceholder}

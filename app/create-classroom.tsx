@@ -112,16 +112,16 @@ const CreateClassroomScreen = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ThemedView style={styles.container}>
-        <ThemedText style={styles.label}>Enter Classroom Name:</ThemedText>
+        <ThemedText style={styles.label}>Ingrese el nombre de la clase:</ThemedText>
         <TextInput
           style={styles.input}
-          placeholder="Classroom Name"
+          placeholder="Nombre de la Clase"
           value={name}
           onChangeText={setName}
           placeholderTextColor="#888"
         />
 
-        <ThemedText style={styles.label}>Select Students:</ThemedText>
+        <ThemedText style={styles.label}>Selecciona los Estudiantes:</ThemedText>
         <View style={styles.listContainer}>
           <FlatList
             data={students || []}
@@ -132,7 +132,7 @@ const CreateClassroomScreen = () => {
         </View>
 
         <View style={styles.buttonContainer}>
-          <Button title="Create Classroom" onPress={handleCreateClassroom} />
+          <Button title="Crear Clase" onPress={handleCreateClassroom} />
         </View>
       </ThemedView>
     </KeyboardAvoidingView>

@@ -30,7 +30,7 @@ export default function ProfileScreen() {
           style={styles.profileImage}
         />
         <View style={styles.titleTextContainer}>
-          <ThemedText type="title">Welcome, {user?.name || "User"}!</ThemedText>
+          <ThemedText type="title">Bienvenido, {user?.name || "User"}!</ThemedText>
           <HelloWave />
         </View>
       </ThemedView>
@@ -38,12 +38,12 @@ export default function ProfileScreen() {
       {isAuthenticated ? (
         <View style={styles.profileInfoContainer}>
           <ThemedText>
-            Name: {user?.name} {user?.last_name}
+            Nombre: {user?.name} {user?.last_name}
           </ThemedText>
-          <ThemedText>Age: {user?.age}</ThemedText>
-          <ThemedText>Gender: {user?.gender}</ThemedText>
+          <ThemedText>Edad: {user?.age}</ThemedText>
+          <ThemedText>Género: {user?.gender}</ThemedText>
           <ThemedText>Email: {user?.email}</ThemedText>
-          <ThemedText>Role: {user?.role}</ThemedText>
+          <ThemedText>Docente</ThemedText>
           <Button title="Log out" onPress={handleLogout} />
         </View>
       ) : (

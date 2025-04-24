@@ -89,17 +89,17 @@ const CreateSessionScreen = () => {
     >
       <ThemedView style={styles.container}>
         <View style={styles.contentContainer}>
-          <ThemedText style={styles.label}>Enter Session Name:</ThemedText>
+          <ThemedText style={styles.label}>Ingrese el nombre de la sesión:</ThemedText>
           <TextInput
             style={styles.input}
-            placeholder="Session Name"
+            placeholder="Nombre de la Sesión"
             value={name}
             onChangeText={setName}
             placeholderTextColor="#888"
           />
 
           <ThemedText style={styles.label}>
-            Select Classroom ({classrooms.length})
+            Selecciona la clase({classrooms.length})
           </ThemedText>
           <View style={styles.listContainer}>
             <FlatList
@@ -117,7 +117,7 @@ const CreateSessionScreen = () => {
 
         <View style={styles.buttonContainer}>
           <Button 
-            title="Create Session" 
+            title="Crear Sesión" 
             onPress={handleCreateSession} 
             disabled={!name || !selectedClassroomId}
           />

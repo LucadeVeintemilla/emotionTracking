@@ -17,11 +17,11 @@ import * as ImagePicker from "expo-image-picker";
 import { useAuth, User } from "@/context/AuthContext";
 
 export default function CreateStudentScreen() {
-  const [name, setName] = useState("S1");
-  const [lastName, setLastName] = useState("S1");
-  const [email, setEmail] = useState("s1@test.com");
-  const [gender, setGender] = useState("male");
-  const [age, setAge] = useState("20");
+  const [name, setName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [gender, setGender] = useState("");
+  const [age, setAge] = useState("");
   const [images, setImages] = useState<(ImagePicker.ImagePickerAsset | null)[]>(
     [null, null, null]
   );
@@ -95,7 +95,7 @@ export default function CreateStudentScreen() {
               {image ? (
                 <Image source={{ uri: image.uri }} style={styles.image} />
               ) : (
-                <Text style={styles.addImageText}>Tap to add image</Text>
+                <Text style={styles.addImageText}>Toque para agregar foto</Text>
               )}
             </TouchableOpacity>
           ))}
@@ -103,14 +103,14 @@ export default function CreateStudentScreen() {
 
         <TextInput
           style={styles.input}
-          placeholder="Name"
+          placeholder="Nombre"
           value={name}
           onChangeText={setName}
           placeholderTextColor="#888"
         />
         <TextInput
           style={styles.input}
-          placeholder="Last Name"
+          placeholder="Apellido"
           value={lastName}
           onChangeText={setLastName}
           placeholderTextColor="#888"
@@ -124,21 +124,21 @@ export default function CreateStudentScreen() {
         />
         <TextInput
           style={styles.input}
-          placeholder="Gender"
+          placeholder="Género"
           value={gender}
           onChangeText={setGender}
           placeholderTextColor="#888"
         />
         <TextInput
           style={styles.input}
-          placeholder="Age"
+          placeholder="Edad"
           value={age}
           onChangeText={setAge}
           keyboardType="numeric"
           placeholderTextColor="#888"
         />
 
-        <Button title="Create New Student" onPress={handleCreateStudent} />
+        <Button title="Crear nuevo estudiante" onPress={handleCreateStudent} />
       </ScrollView>
     </KeyboardAvoidingView>
   );

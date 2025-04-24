@@ -24,7 +24,7 @@ const StudentsScreen = () => {
     keyboardShouldPersistTaps="handled"
   >
       <View style={{ margin: 5 }}>
-        <ThemedText>Students ({students.length})</ThemedText>
+        <ThemedText>Estudiantes ({students.length})</ThemedText>
         {students && students.length > 0 ? (
           students.map((student) => (
             <StudentCard 
@@ -33,7 +33,7 @@ const StudentsScreen = () => {
             />
           ))
         ) : (
-          <ThemedText>No students found</ThemedText>
+          <ThemedText>No se encontraron estudiantes</ThemedText>
         )}
       </View>
     </ScrollView>

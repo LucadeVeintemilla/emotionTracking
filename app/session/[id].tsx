@@ -102,14 +102,14 @@ const SessionDetailScreen = () => {
         <ThemedText style={styles.sessionName}>{session.name}</ThemedText>
         <ThemedText style={{ marginBottom: 20 }}>{formattedDate}</ThemedText>
         <ThemedText style={styles.teacherName}>
-          Professor: {user!.name} {user!.last_name}
+          Docente: {user!.name} {user!.last_name}
         </ThemedText>
 
         <ThemedText style={styles.teacherName}>
-          Classroom: {sessionClassroom!.name}
+          Clase: {sessionClassroom!.name}
         </ThemedText>
 
-        <ThemedText style={styles.teacherName}>Students:</ThemedText>
+        <ThemedText style={styles.teacherName}>Estudiantes:</ThemedText>
 
         {classroomStudents.map((student, index) => (
           <View key={`session-student-${student.id}`}>
@@ -130,10 +130,10 @@ const SessionDetailScreen = () => {
 
       {!isRecording && (
         <View style={styles.footer}>
-          <Button title="Start Recording" onPress={handleOpen} color="#0a7ea4" />
+          <Button title="Empezar Grabación" onPress={handleOpen} color="#0a7ea4" />
           <View style={styles.buttonSpacerVertical} />
           <Button 
-            title="View Statistics" 
+            title="Ver Estadísticas" 
             onPress={handleViewStatistics}
             color="#0a7ea4"
           />
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     position: 'absolute', 
-    bottom: 150,           
+    bottom: 60,           
     left: 0, 
   },
   buttonGroup: {

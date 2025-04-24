@@ -66,7 +66,7 @@ export default function StatsScreen() {
     <ScrollView  style={styles.container}
     contentContainerStyle={{ paddingBottom: 60 }} 
   >
-      <ThemedText style={styles.title}>Session Statistics</ThemedText>
+      <ThemedText style={styles.title}>Estadísticas de sesión</ThemedText>
 
       {stats.map((stat, index) => {
         const emotionLabels = [

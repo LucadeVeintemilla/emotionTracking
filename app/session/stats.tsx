@@ -84,7 +84,7 @@ export default function StatsScreen() {
             contentContainerStyle={styles.contentContainer}
             showsVerticalScrollIndicator={true}
         >
-            <ThemedText style={styles.title}>Session Statistics</ThemedText>
+            <ThemedText style={styles.title}>Estadísticas de sesión</ThemedText>
 
             {stats.map((stat, index) => (
                 <ThemedView key={index} style={styles.statCard}>

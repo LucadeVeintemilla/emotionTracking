@@ -31,7 +31,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Session",
+          title: "Sesiones",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="house.fill" color={color} />
           ),
@@ -54,7 +54,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="dashboard"
         options={{
-          title: "Analysis",
+          title: "Análisis",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="chart.bar.fill" color={color} />
           ),
@@ -63,7 +63,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="classrom"
         options={{
-          title: "Classroom",
+          title: "Clases",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="book.fill" color={color} />
           ),
@@ -86,7 +86,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="students"
         options={{
-          title: "Students",
+          title: "Estudiantes",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="person.fill" color={color} />
           ),
@@ -109,7 +109,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Profile",
+          title: "Perfil",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="person.fill" color={color} />
           ),

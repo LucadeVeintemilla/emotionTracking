@@ -46,9 +46,9 @@ const StudentDetailScreen = () => {
         {student.name} {student.last_name}
       </ThemedText>
       <ThemedText>Email: {student.email}</ThemedText>
-      <ThemedText>Age: {student.age}</ThemedText>
-      <ThemedText>Gender: {student.gender}</ThemedText>
-      <ThemedText>Role: {student.role}</ThemedText>
+      <ThemedText>Edad: {student.age}</ThemedText>
+      <ThemedText>Género: {student.gender}</ThemedText>
+      <ThemedText>Estudiante</ThemedText>
     </ScrollView>
   );
 };
