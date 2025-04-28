@@ -81,21 +81,21 @@ export default function Register({ navigation }: any) {
           {image ? (
             <Image source={{ uri: image.uri }} style={styles.image} />
           ) : (
-            <Text style={styles.addImageText}>Tap to add image</Text>
+            <Text style={styles.addImageText}>Clic para añadir foto</Text>
           )}
         </TouchableOpacity>
 
         <Text>Register</Text>
         <TextInput
           style={styles.input}
-          placeholder="Name"
+          placeholder="Nombre"
           value={name}
           onChangeText={setName}
           placeholderTextColor="#888"
         />
         <TextInput
           style={styles.input}
-          placeholder="Last Name"
+          placeholder="Apellido"
           value={lastName}
           onChangeText={setLastName}
           placeholderTextColor="#888"
@@ -117,23 +117,23 @@ export default function Register({ navigation }: any) {
         />
         <TextInput
           style={styles.input}
-          placeholder="Gender"
+          placeholder="Género"
           value={gender}
           onChangeText={setGender}
           placeholderTextColor="#888"
         />
         <TextInput
           style={styles.input}
-          placeholder="Age"
+          placeholder="Edad"
           value={age}
           onChangeText={setAge}
           keyboardType="numeric"
           placeholderTextColor="#888"
         />
 
-        <Button title="Register" onPress={handleRegister} />
+        <Button title="Registrate" onPress={handleRegister} />
         <Button
-          title="Already have an account? Sign in"
+          title="Ya tienes una cuenta? Inicia sesión"
           onPress={() => router.navigate("/login")}
         />
       </ScrollView>

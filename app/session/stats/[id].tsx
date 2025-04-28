@@ -150,7 +150,7 @@ export default function StatsScreen() {
               Estadísticas Generales
             </ThemedText>
             <View style={styles.chartContainer}>
-                <ThemedText style={{ fontWeight: "bold", marginBottom: 4 }}>Before</ThemedText>
+                <ThemedText style={{ fontWeight: "bold", marginBottom: 4 }}>Antes</ThemedText>
                 <BarChart
                 data={{
                   labels: Array.from(EMOTION_LABELS),
@@ -202,7 +202,7 @@ export default function StatsScreen() {
                   </View>
                 ))}
               </View>
-              <ThemedText style={{ fontWeight: "bold", marginTop: 8, marginBottom: 4 }}>After</ThemedText>
+              <ThemedText style={{ fontWeight: "bold", marginTop: 8, marginBottom: 4 }}>Despues</ThemedText>
               <BarChart
                 data={{
                   labels: Array.from(EMOTION_LABELS),
@@ -297,7 +297,7 @@ export default function StatsScreen() {
               {getStudentName(stat.student_id)}
             </ThemedText>
             <View style={styles.chartContainer}>
-              <ThemedText style={{ fontWeight: "bold", marginBottom: 4 }}>Before</ThemedText>
+              <ThemedText style={{ fontWeight: "bold", marginBottom: 4 }}>Antes</ThemedText>
               <BarChart
                 data={{
                   labels: Array.from(EMOTION_LABELS),
@@ -351,7 +351,7 @@ export default function StatsScreen() {
                   </View>
                 ))}
               </View>
-              <ThemedText style={{ fontWeight: "bold", marginTop: 8, marginBottom: 4 }}>After</ThemedText>
+              <ThemedText style={{ fontWeight: "bold", marginTop: 8, marginBottom: 4 }}>Despues</ThemedText>
               <BarChart
                 data={{
                   labels: Array.from(EMOTION_LABELS),
