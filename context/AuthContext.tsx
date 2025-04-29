@@ -130,7 +130,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const register = async (formData: FormData, endpoint: string = '/register'): Promise<void> => {
+  const register = async (formData: FormData, endpoint: string = '/user/register'): Promise<void> => {
     try {
       const headers: Record<string, string> = {};
       
@@ -148,8 +148,45 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       );
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Registration failed");
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Registration failed");
+        } else {
+          const errorText = await response.text();
+          console.error("Non-JSON error response:", errorText);
+          throw new Error("Registration failed: Server returned an invalid response");
+        }
+      }
+
+      const data = await response.json();
+      
+      setToken(data.token);
+
+      const userResponse = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/user/me`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${data.token}`,
+          },
+        }
+      );
+
+      if (userResponse.ok) {
+        const userData = await userResponse.json();
+        setUser({
+          id: userData._id,
+          name: userData.name,
+          last_name: userData.last_name,
+          age: parseInt(userData.age, 10),
+          gender: userData.gender,
+          email: userData.email,
+          role: userData.role,
+          images: userData.images,
+        });
+      } else {
+        throw new Error("Failed to fetch user data after registration");
       }
 
       await loadStudents();

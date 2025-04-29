@@ -81,7 +81,7 @@ export default function Register({ navigation }: any) {
 
       try {
         await register(formData);
-        router.replace("/(tabs)");
+        router.replace("/(tabs)/profile");
       } catch (error: any) {
         console.error("Registration failed:", error.message);
         Alert.alert(
