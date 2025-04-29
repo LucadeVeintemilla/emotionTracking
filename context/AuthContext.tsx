@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         role: student.role,
         images: student.images.map((img: string) => img.replace(/\\/g, '/')),
       }));
-      
+
       setStudents(formattedStudents);
     } catch (error) {
       console.error("Error in loadStudents:", error);
@@ -133,7 +133,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const register = async (formData: FormData, endpoint: string = '/user/register'): Promise<void> => {
     try {
       const headers: Record<string, string> = {};
-      
+
       if (endpoint === '/student/register' && token) {
         headers['Authorization'] = `Bearer ${token}`;
       }
@@ -159,38 +159,39 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       }
 
-      const data = await response.json();
-      
-      setToken(data.token);
+      if (endpoint === '/user/register') {
+        const data = await response.json();
+        setToken(data.token);
 
-      const userResponse = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/user/me`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${data.token}`,
-          },
+        const userResponse = await fetch(
+          `${process.env.EXPO_PUBLIC_API_URL}/user/me`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${data.token}`,
+            },
+          }
+        );
+
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          setUser({
+            id: userData._id,
+            name: userData.name,
+            last_name: userData.last_name,
+            age: parseInt(userData.age, 10),
+            gender: userData.gender,
+            email: userData.email,
+            role: userData.role,
+            images: userData.images,
+          });
+        } else {
+          throw new Error("Failed to fetch user data after registration");
         }
-      );
-
-      if (userResponse.ok) {
-        const userData = await userResponse.json();
-        setUser({
-          id: userData._id,
-          name: userData.name,
-          last_name: userData.last_name,
-          age: parseInt(userData.age, 10),
-          gender: userData.gender,
-          email: userData.email,
-          role: userData.role,
-          images: userData.images,
-        });
-      } else {
-        throw new Error("Failed to fetch user data after registration");
       }
 
       await loadStudents();
-      
+
     } catch (error) {
       console.error("Register error:", error);
       throw error;
@@ -246,8 +247,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error(errorData.error || "Failed to update student");
       }
 
-      setStudents(prev => 
-        prev.map(student => 
+      setStudents(prev =>
+        prev.map(student =>
           student.id === studentId ? { ...student, ...updatedData } : student
         )
       );
