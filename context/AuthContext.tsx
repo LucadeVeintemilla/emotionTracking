@@ -22,6 +22,8 @@ interface AuthContextType {
   logout: () => void;
   students: User[];
   loadStudents: () => Promise<void>;
+  deleteStudent: (studentId: string) => Promise<void>;
+  updateStudent: (studentId: string, updatedData: Partial<User>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -159,6 +161,69 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const deleteStudent = async (studentId: string): Promise<void> => {
+    try {
+      if (!token) throw new Error("No authentication token");
+
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/student/${studentId}`,
+        {
+          method: "DELETE",
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to delete student");
+      }
+
+      // Update local state
+      setStudents(prev => prev.filter(student => student.id !== studentId));
+
+    } catch (error) {
+      console.error("Error deleting student:", error);
+      throw error;
+    }
+  };
+
+  const updateStudent = async (studentId: string, updatedData: Partial<User>): Promise<void> => {
+    try {
+      if (!token) throw new Error("No authentication token");
+
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/student/${studentId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedData),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update student");
+      }
+
+      // Update local state
+      setStudents(prev => 
+        prev.map(student => 
+          student.id === studentId ? { ...student, ...updatedData } : student
+        )
+      );
+
+    } catch (error) {
+      console.error("Error updating student:", error);
+      throw error;
+    }
+  };
+
   const logout = () => {
     setToken(null);
     setUser(null);
@@ -175,6 +240,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         logout,
         students,
         loadStudents,
+        deleteStudent,
+        updateStudent,
       }}
     >
       {children}

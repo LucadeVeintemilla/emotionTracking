@@ -45,7 +45,7 @@ const CreateSemesterScreen = () => {
 
     try {
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/semester/create_semester`,
+        `${process.env.EXPO_PUBLIC_API_URL}/semester/create`,
         {
           method: "POST",
           headers: {

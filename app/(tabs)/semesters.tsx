@@ -20,7 +20,7 @@ const SemestersScreen = () => {
       keyboardShouldPersistTaps="handled"
     >
       <View style={{ margin: 5 }}>
-        <ThemedText>Semestres ({semesters.length})</ThemedText>
+        <ThemedText>Semestres</ThemedText>
         {semesters.map((semester, index) => (
           <SemesterCard semester={semester} key={index} />
         ))}

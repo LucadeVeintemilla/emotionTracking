@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: "100%",
-    paddingVertical: 90,
+    paddingVertical: 30,
     backgroundColor: "transparent",
     position: "relative",
     zIndex: 2,

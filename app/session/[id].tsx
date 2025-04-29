@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
   footer: {
     width: '100%',
     backgroundColor: 'white',
-    paddingVertical: 50,
+    paddingVertical: 20,
     paddingHorizontal: 20,
     borderTopWidth: 1,
     borderTopColor: '#eee',
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     position: 'absolute',
-    bottom: 20,
+    bottom: 10,
     left: 0,
     zIndex: 1000,
   },
