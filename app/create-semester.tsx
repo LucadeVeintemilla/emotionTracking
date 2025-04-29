@@ -15,12 +15,14 @@ import { ThemedView } from "@/components/ThemedView";
 import { router } from "expo-router";
 import { useAuth, User } from "@/context/AuthContext";
 import { IconSymbol } from "@/components/ui/IconSymbol";
+import { useSemester } from "@/context/SemesterContext";
 
 const CreateSemesterScreen = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [selectedStudents, setSelectedStudents] = useState<User[]>([]);
-  const { students, loadStudents } = useAuth();
+  const { students, loadStudents, token } = useAuth();
+  const { loadSemesters } = useSemester();
 
   useEffect(() => {
     loadStudents();
@@ -50,6 +52,7 @@ const CreateSemesterScreen = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
           },
           body: JSON.stringify({
             name,
@@ -60,10 +63,12 @@ const CreateSemesterScreen = () => {
       );
 
       if (response.ok) {
+        await loadSemesters();
         Alert.alert("Éxito", "Semestre creado exitosamente");
         router.back();
       } else {
-        Alert.alert("Error", "No se pudo crear el semestre");
+        const errorData = await response.json().catch(() => ({}));
+        Alert.alert("Error", errorData.error || "No se pudo crear el semestre");
       }
     } catch (error) {
       console.error("Error creating semester:", error);

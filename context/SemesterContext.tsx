@@ -119,7 +119,6 @@ export const SemesterProvider = ({ children }: { children: React.ReactNode }) =>
 
       if (response.ok) {
         console.log("Semester updated successfully");
-        // Update local state
         setSemesters(prevSemesters => 
           prevSemesters.map(semester => 
             semester.id === semesterId 
@@ -159,7 +158,6 @@ export const SemesterProvider = ({ children }: { children: React.ReactNode }) =>
 
       if (response.ok) {
         console.log("Semester deleted successfully");
-        // Update local state
         setSemesters(prevSemesters => 
           prevSemesters.filter(semester => semester.id !== semesterId)
         );

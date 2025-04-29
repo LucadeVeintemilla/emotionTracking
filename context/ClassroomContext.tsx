@@ -145,9 +145,7 @@ export const ClassroomProvider = ({ children }: { children: ReactNode }) => {
       if (response.ok) {
         const responseData = await response.json();
         
-        // Check if response is an object with classroom data or just a message
         if (responseData && responseData._id) {
-          // Format the response to match our Classroom interface
           const updatedData: Classroom = {
             id: responseData._id,
             name: responseData.name,
@@ -161,7 +159,6 @@ export const ClassroomProvider = ({ children }: { children: ReactNode }) => {
             )
           );
         } else {
-          // If we just got a success message but no data, reload classrooms
           await loadClassrooms();
         }
       } else {

@@ -1,11 +1,9 @@
-// This file is a fallback for using MaterialIcons on Android and web.
 
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { SymbolWeight } from 'expo-symbols';
 import React from 'react';
 import { OpaqueColorValue, StyleProp, TextStyle } from 'react-native';
 
-// Mapeo universal para iOS y Android
 const MAPPING = {
   'house.fill': 'home',
   'plus': 'plus',

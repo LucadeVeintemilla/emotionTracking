@@ -203,7 +203,6 @@ const styles = StyleSheet.create({
     minWidth: "100%",
   },
   pickerContainer: {
-    //UPPER MARGIN REDUCE OF THE PICKER BOX 
     
     width: "100%",
     marginBottom: 30,
@@ -287,7 +286,6 @@ const styles = StyleSheet.create({
     color: "#666",
   },
   buttonContainer: {
-    //FIX RECUDE THE BUTTON CONTAINER MARGIN 
       
     marginTop: -80,
     marginBottom: -20,

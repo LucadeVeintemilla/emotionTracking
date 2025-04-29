@@ -57,7 +57,6 @@ const SemesterDetailScreen = () => {
       if (response.ok) {
         setShowAddModal(false);
         setSelectedStudents([]);
-        // Refresh semester data
         loadSemesters();
       }
     } catch (error) {
@@ -81,7 +80,6 @@ const SemesterDetailScreen = () => {
       if (response.ok) {
         setShowRemoveModal(false);
         setSelectedStudents([]);
-        // Refresh semester data
         loadSemesters();
       }
     } catch (error) {
