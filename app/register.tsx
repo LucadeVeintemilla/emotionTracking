@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
-import { useAuth, User } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Register({ navigation }: any) {
   const [name, setName] = useState("");
@@ -23,6 +23,7 @@ export default function Register({ navigation }: any) {
   const [gender, setGender] = useState("");
   const [age, setAge] = useState("");
   const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>(null);
+  const [role, setRole] = useState("professor");
 
   const { register } = useAuth();
 
@@ -47,26 +48,52 @@ export default function Register({ navigation }: any) {
 
   const handleRegister = async () => {
     try {
-      const userData: Omit<User, "id" | "images"> & {
-        password: string;
-        images: ImagePicker.ImagePickerAsset[]
-      } = {
-        age: parseInt(age),
-        email,
-        gender,
-        last_name: lastName,
-        name,
-        password,
-        role: "professor",
-        images: image ? [image] : [],
-      };
+      if (!name || !lastName || !email || !password || !gender || !age || !image) {
+        Alert.alert("Error", "Por favor complete todos los campos");
+        return;
+      }
 
-      await register(userData);
-      router.replace("/profile");
+      const ageNum = parseInt(age);
+      if (isNaN(ageNum)) {
+        Alert.alert("Error", "La edad debe ser un número válido");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("last_name", lastName);
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("gender", gender);
+      formData.append("age", ageNum.toString());
+      formData.append("role", role);
+
+      if (image) {
+        const imageFileName = `profile_${Date.now()}.${image.uri.split('.').pop()}`;
+        formData.append("image", {
+          uri: Platform.OS === 'ios' ? image.uri.replace('file://', '') : image.uri,
+          type: 'image/jpeg',
+          name: imageFileName,
+        } as any);
+      }
+
+      console.log("Form data being sent:", Object.fromEntries(formData));
+
+      try {
+        await register(formData);
+        router.replace("/(tabs)");
+      } catch (error: any) {
+        console.error("Registration failed:", error.message);
+        Alert.alert(
+          "Error en el registro",
+          "Error al conectar con el servidor. Por favor intente nuevamente."
+        );
+      }
     } catch (error) {
+      console.error('Registration error:', error);
       Alert.alert(
-        "Registration failed",
-        "Please check your credentials and try again."
+        "Error en el registro",
+        "Por favor verifique sus datos e intente nuevamente"
       );
     }
   };
@@ -86,6 +113,7 @@ export default function Register({ navigation }: any) {
         </TouchableOpacity>
 
         <Text>Register</Text>
+
         <TextInput
           style={styles.input}
           placeholder="Nombre"
@@ -155,7 +183,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingLeft: 8,
     width: "100%",
-    color: "#000", 
+    color: "#000",
     backgroundColor: "#fff",
   },
   imageContainer: {

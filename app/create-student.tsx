@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   View,
+  Modal,
 } from "react-native";
 import { Picker } from '@react-native-picker/picker';
 import { router } from "expo-router";
@@ -25,8 +26,9 @@ export default function CreateStudentScreen() {
   const [gender, setGender] = useState("male");
   const [age, setAge] = useState("");
   const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>(null);
+  const [showGenderPicker, setShowGenderPicker] = useState(false);
 
-  const { register, loadStudents } = useAuth();
+  const { register, loadStudents, user } = useAuth();
 
   const pickImageFromGallery = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -66,35 +68,50 @@ export default function CreateStudentScreen() {
   };
 
   const handleCreateStudent = async () => {
-    if (!image) {
-      Alert.alert("Error", "Por favor, agrega una foto del estudiante");
+    if (!name || !lastName || !email || !age || !gender || !image || !user) {
+      Alert.alert("Error", "Por favor complete todos los campos");
+      return;
+    }
+
+    const ageNum = parseInt(age);
+    if (isNaN(ageNum) || ageNum <= 0) {
+      Alert.alert("Error", "Por favor ingrese una edad válida");
       return;
     }
 
     try {
-      const userData: Omit<User, "id" | "images"> & {
-        password: string;
-        images: ImagePicker.ImagePickerAsset[];
-      } = {
-        age: parseInt(age),
-        email,
-        gender,
-        last_name: lastName,
-        name,
-        password: "",
-        role: "student",
-        images: [image],
-      };
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("last_name", lastName);
+      formData.append("email", email);
+      formData.append("gender", gender);
+      formData.append("age", ageNum.toString());
+      formData.append("role", "student");
+      formData.append("created_by_professor", user.id);
 
-      await register(userData);
+      const imageFileName = `student_${Date.now()}.${image.uri.split('.').pop()}`;
+      formData.append("image_0", {
+        uri: Platform.OS === 'ios' ? image.uri.replace('file://', '') : image.uri,
+        type: 'image/jpeg',
+        name: imageFileName,
+      } as any);
+
+      console.log("Sending form data:", Object.fromEntries(formData));
+      
+      await register(formData);
       await loadStudents();
       router.replace("/(tabs)/students");
     } catch (error) {
+      console.error('Registration error:', error);
       Alert.alert(
         "Error en el registro",
         "Por favor verifica los datos e intenta nuevamente"
       );
     }
+  };
+
+  const openGenderPicker = () => {
+    setShowGenderPicker(true);
   };
 
   return (
@@ -159,26 +176,38 @@ export default function CreateStudentScreen() {
           onChangeText={setEmail}
           placeholderTextColor="#888"
         />
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={gender}
-            placeholder="Género"
-            onValueChange={(itemValue) => setGender(itemValue)}
-            style={styles.picker}
-            dropdownIconColor="#888"
-          >
-            <Picker.Item 
-              label="Masculino" 
-              value="male"
-              color="#000"  
-            />
-            <Picker.Item 
-              label="Femenino" 
-              value="female" 
-              color="#000"
-            />
-          </Picker>
-        </View>
+        <TouchableOpacity 
+          style={styles.input}
+          onPress={openGenderPicker}
+        >
+          <Text style={[styles.inputText, !gender && styles.placeholder]}>
+            {gender ? (gender === 'male' ? 'Masculino' : 'Femenino') : 'Género'}
+          </Text>
+        </TouchableOpacity>
+        <Modal
+          visible={showGenderPicker}
+          transparent={true}
+          animationType="slide"
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <View style={styles.pickerHeader}>
+                <Button title="Cerrar" onPress={() => setShowGenderPicker(false)} />
+              </View>
+              <Picker
+                selectedValue={gender}
+                onValueChange={(itemValue) => {
+                  setGender(itemValue);
+                  setShowGenderPicker(false);
+                }}
+                style={styles.picker}
+              >
+                <Picker.Item label="Masculino" value="male" />
+                <Picker.Item label="Femenino" value="female" />
+              </Picker>
+            </View>
+          </View>
+        </Modal>
         <TextInput
           style={styles.input}
           placeholder="Edad"
@@ -250,8 +279,35 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   picker: {
-    height: 50,
+    height: 100, 
     width: "100%",
     color: "#000",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingBottom: 20,
+    height: '40%', 
+  },
+  pickerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    padding: 15, 
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  inputText: {
+    color: '#000',
+    fontSize: 16,
+    padding: 10,
+  },
+  placeholder: {
+    color: '#888',
   },
 });

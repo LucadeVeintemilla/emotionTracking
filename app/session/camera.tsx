@@ -49,7 +49,6 @@ const CameraModal = ({
 
   const normalizeImagePath = (path: string) => {
     if (!path) return "";
-    // Solución fue arreglar el path 
     return path.replace(/\\/g, '/').replace(/\/+/g, '/');
   };
 

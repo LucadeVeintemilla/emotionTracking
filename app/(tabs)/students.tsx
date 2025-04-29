@@ -6,18 +6,20 @@ import { useAuth, User } from "@/context/AuthContext";
 import { Link } from "expo-router";
 
 const StudentsScreen = () => {
-  const { students, loadStudents } = useAuth();
+  const { students, loadStudents, user } = useAuth();
 
   useEffect(() => {
     const loadData = async () => {
-      try {
-        await loadStudents();
-      } catch (error) {
-        console.error("Error loading students:", error);
+      if (user) {  
+        try {
+          await loadStudents();
+        } catch (error) {
+          console.error("Error loading students:", error);
+        }
       }
     };
     loadData();
-  }, []);
+  }, [user]); 
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 80 }}

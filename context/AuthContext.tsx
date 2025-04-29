@@ -17,12 +17,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (
-    userData: Omit<User, "id" | "images"> & {
-      password: string;
-      images: ImagePicker.ImagePickerAsset[];
-    }
-  ) => Promise<void>;
+  register: (formData: FormData) => Promise<void>;
   logout: () => void;
   students: User[];
   loadStudents: () => Promise<void>;
@@ -44,9 +39,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const loadStudents = async (): Promise<void> => {
     try {
-      if (!token) {
-        throw new Error("No authentication token found");
-      }
+      if (!user || !token) return;
 
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_API_URL}/user/students`,
@@ -59,22 +52,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       );
 
-      if (response.ok) {
-        const rawData = await response.json();
-        const formattedStudents: User[] = rawData.map((student: any) => ({
-          id: student._id,
-          name: student.name,
-          last_name: student.last_name,
-          age: parseInt(student.age),
-          gender: student.gender,
-          email: student.email,
-          role: student.role,
-          images: student.images.map((img: string) => img.replace(/\\/g, '/')),
-        }));
-        setStudents(formattedStudents);
-      } else {
+      if (!response.ok) {
         console.error("Failed to load students:", response.status);
+        return;
       }
+
+      const rawData = await response.json();
+      const formattedStudents: User[] = rawData.map((student: any) => ({
+        id: student._id,
+        name: student.name,
+        last_name: student.last_name,
+        age: parseInt(student.age),
+        gender: student.gender,
+        email: student.email,
+        role: student.role,
+        images: student.images.map((img: string) => img.replace(/\\/g, '/')),
+      }));
+      
+      setStudents(formattedStudents);
     } catch (error) {
       console.error("Error in loadStudents:", error);
     }
@@ -132,85 +127,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const register = async (
-    userData: Omit<User, "id" | "images"> & {
-      password: string;
-      images: ImagePicker.ImagePickerAsset[];
-    }
-  ): Promise<void> => {
+  const register = async (formData: FormData): Promise<void> => {
     try {
-      const formData = new FormData();
-      formData.append("name", userData.name);
-      formData.append("last_name", userData.last_name);
-      formData.append("age", userData.age.toString());
-      formData.append("gender", userData.gender);
-      formData.append("email", userData.email);
-      formData.append("role", userData.role);
-
-      if (userData.role === "professor") {
-        formData.append("password", userData.password);
-        if (userData.images.length === 1) {
-          const image = userData.images[0];
-          const cleanUri = image.uri.replace("file://", "").replace(/\\/g, '/');
-          formData.append("image", {
-            uri: cleanUri,
-            type: image.mimeType || "image/jpeg",
-            name: `professor_${Date.now()}.jpg`
-          } as any);
-        }
-      } else {
-        const image = userData.images[0];
-        formData.append("image_0", {
-          uri: image.uri.replace("file://", ""),
-          type: image.mimeType || "image/jpeg",
-          name: `student_image.jpg`
-        } as any);
-      }
-
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/user/register`,
+        `${process.env.EXPO_PUBLIC_API_URL}/student/register`, // Changed from auth/register
         {
           method: "POST",
           body: formData,
           headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      if (response.ok) {
-        const data = await response.json();
-
-        const userResponse = await fetch(
-          `${process.env.EXPO_PUBLIC_API_URL}/user/me`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${data.token}`,
-            },
-          }
-        );
-
-        if (userData.role === "professor") {
-          setToken(data.token);
-
-          if (userResponse.ok) {
-            const user = await userResponse.json();
-            setUser({
-              ...user,
-              id: user._id,
-              images: user.images.map((img: string) => img.replace(/\\/g, '/'))
-            });
-          } else {
-            throw new Error("Failed to fetch user data");
-          }
-        } else if (userData.role === "student") {
-          await loadStudents();
-        }
-      } else {
+      if (!response.ok) {
         throw new Error("Registration failed");
       }
+
+      // Load students after successful registration
+      await loadStudents();
+      
     } catch (error) {
       console.error("Register error:", error);
       throw error;
