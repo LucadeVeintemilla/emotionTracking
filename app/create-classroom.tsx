@@ -10,10 +10,12 @@ import {
   FlatList,
   TouchableOpacity,
 } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import { useAuth, User } from "@/context/AuthContext";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { useClassroom } from "@/context/ClassroomContext";
+import { useSemester } from "@/context/SemesterContext";
 import { router } from "expo-router";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 
@@ -24,23 +26,27 @@ const getImageUrl = (path: string) => {
 const CreateClassroomScreen = () => {
   const { students, loadStudents } = useAuth();
   const { addClassroom } = useClassroom();
+  const { semesters, loadSemesters } = useSemester();
   const [name, setName] = useState("");
   const [selectedStudents, setSelectedStudents] = useState<User[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [selectedSemesterId, setSelectedSemesterId] = useState<string>("");
+
+  const filteredStudents = students.filter((student) => {
+    const selectedSemester = semesters.find((s) => s.id === selectedSemesterId);
+    return selectedSemester?.students?.includes(student.id);
+  });
 
   useEffect(() => {
-    if (!students || students.length === 0) {
-      const loadData = async () => {
-        try {
-          await loadStudents();
-        } catch (error) {
-          console.error("Error loading students:", error);
-        }
-      };
-      loadData();
-    }
+    const loadData = async () => {
+      try {
+        await loadStudents();
+        await loadSemesters();
+      } catch (error) {
+        console.error("Error loading data:", error);
+      }
+    };
+    loadData();
   }, []);
-  
 
   const toggleSelectStudent = (student: User) => {
     if (!student || !student.id) {
@@ -58,7 +64,7 @@ const CreateClassroomScreen = () => {
   };
 
   const handleCreateClassroom = () => {
-    if (!name || selectedStudents.length === 0) {
+    if (!name || selectedStudents.length === 0 || !selectedSemesterId) {
       alert("Please fill all fields");
       return;
     }
@@ -112,6 +118,30 @@ const CreateClassroomScreen = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ThemedView style={styles.container}>
+        <ThemedText style={styles.label}>Selecciona el semestre:</ThemedText>
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={selectedSemesterId}
+            style={styles.picker}
+            onValueChange={(itemValue) => setSelectedSemesterId(itemValue)}
+            mode="dropdown"
+          >
+            <Picker.Item 
+              label="Seleccione un semestre" 
+              value="" 
+              color="#666"
+            />
+            {semesters.map((semester) => (
+              <Picker.Item
+                key={semester.id}
+                label={semester.name}
+                value={semester.id}
+                color="#000"
+              />
+            ))}
+          </Picker>
+        </View>
+
         <ThemedText style={styles.label}>Ingrese el nombre de la clase:</ThemedText>
         <TextInput
           style={styles.input}
@@ -121,10 +151,12 @@ const CreateClassroomScreen = () => {
           placeholderTextColor="#888"
         />
 
-        <ThemedText style={styles.label}>Selecciona los Estudiantes:</ThemedText>
+        <ThemedText style={styles.label}>
+          Selecciona los Estudiantes ({filteredStudents.length}):
+        </ThemedText>
         <View style={styles.listContainer}>
           <FlatList
-            data={students || []}
+            data={filteredStudents}
             keyExtractor={(item) => item?.id?.toString() || Math.random().toString()}
             renderItem={renderStudentItem}
             contentContainerStyle={styles.list}
@@ -132,7 +164,11 @@ const CreateClassroomScreen = () => {
         </View>
 
         <View style={styles.buttonContainer}>
-          <Button title="Crear Clase" onPress={handleCreateClassroom} />
+          <Button
+            title="Crear Clase"
+            onPress={handleCreateClassroom}
+            disabled={!name || selectedStudents.length === 0 || !selectedSemesterId}
+          />
         </View>
       </ThemedView>
     </KeyboardAvoidingView>
@@ -142,10 +178,10 @@ const CreateClassroomScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
     alignItems: "center",
     padding: 20,
-    paddingBottom: 80,
+    paddingBottom: 20,
   },
   label: {
     fontSize: 16,
@@ -161,10 +197,27 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "white",
   },
+  pickerContainer: {
+    width: "100%",
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 8,
+    backgroundColor: "white",
+    overflow: "hidden",
+    minHeight: 50,
+  },
+  picker: {
+    width: "100%",
+    height: 200,
+    backgroundColor: "transparent",
+    color: "#000",
+  },
   listContainer: {
     width: "100%",
-    height: "70%", 
-    marginBottom: 20,
+    flex: 1,
+    marginBottom: 10,
+    position: "relative",
   },
   list: {
     paddingVertical: 8,
@@ -226,9 +279,10 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: "100%",
-    paddingVertical: 10,
+    paddingVertical: 90,
     backgroundColor: "transparent",
-    marginTop: "auto", 
+    position: "relative",
+    zIndex: 2,
   },
 });
 

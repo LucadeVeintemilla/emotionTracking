@@ -45,6 +45,14 @@ function RootLayoutNav() {
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="+not-found" />
       <Stack.Screen
+        name="(semester)/[id]"
+        options={{
+          title: "Semestre",
+          headerShown: true,
+          presentation: "card",
+        }}
+      />
+      <Stack.Screen
         name="login"
         options={{
           title: "Iniciar Sesión",
@@ -112,6 +120,22 @@ function RootLayoutNav() {
         name="session/stats/[id]"
         options={{
           title: "Estadísticas de Emociones",
+          headerShown: true,
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
+        name="semester/[id]"
+        options={{
+          title: "Semestre",
+          headerShown: true,
+          presentation: "card",
+        }}
+      />
+      <Stack.Screen
+        name="create-semester"
+        options={{
+          title: "Crear Semestre",
           headerShown: true,
           presentation: "modal",
         }}

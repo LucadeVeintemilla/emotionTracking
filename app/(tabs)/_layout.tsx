@@ -33,7 +33,7 @@ export default function TabLayout() {
         options={{
           title: "Sesiones",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="house.fill" color={color} />
+            <IconSymbol size={28} name="camera.rotate.fill" color={color} />
           ),
           headerRight: () => (
             <Pressable
@@ -84,6 +84,29 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="semesters"
+        options={{
+          title: "Semestres",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="plus.app" color={color} />
+          ),
+          headerRight: () => (
+            <Pressable
+              onPress={() => {
+                router.push("/create-semester");
+              }}
+            >
+              <IconSymbol
+                style={{ marginRight: 10 }}
+                size={28}
+                name="plus"
+                color={Colors[colorScheme].tint}
+              />
+            </Pressable>
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="students"
         options={{
           title: "Estudiantes",
@@ -111,7 +134,7 @@ export default function TabLayout() {
         options={{
           title: "Perfil",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="person.fill" color={color} />
+            <IconSymbol size={28} name="house.fill" color={color} />
           ),
         }}
       />

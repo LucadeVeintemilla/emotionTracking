@@ -10,6 +10,7 @@ export interface User {
   email: string;
   role: string;
   images: string[];
+  semester?: string;
 }
 
 interface AuthContextType {
@@ -17,7 +18,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (formData: FormData) => Promise<void>;
+  register: (formData: FormData, endpoint?: string) => Promise<void>;
   logout: () => void;
   students: User[];
   loadStudents: () => Promise<void>;
@@ -127,24 +128,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const register = async (formData: FormData): Promise<void> => {
+  const register = async (formData: FormData, endpoint: string = '/register'): Promise<void> => {
     try {
+      const headers: Record<string, string> = {};
+      
+      // Add Authorization header for student registration
+      if (endpoint === '/student/register' && token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/student/register`, // Changed from auth/register
+        `${process.env.EXPO_PUBLIC_API_URL}${endpoint}`,
         {
           method: "POST",
           body: formData,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: headers,
         }
       );
 
       if (!response.ok) {
-        throw new Error("Registration failed");
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Registration failed");
       }
 
-      // Load students after successful registration
       await loadStudents();
       
     } catch (error) {

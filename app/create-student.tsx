@@ -81,31 +81,30 @@ export default function CreateStudentScreen() {
 
     try {
       const formData = new FormData();
-      formData.append("name", name);
-      formData.append("last_name", lastName);
-      formData.append("email", email);
+      formData.append("name", name.trim());
+      formData.append("last_name", lastName.trim());
+      formData.append("email", email.trim());
       formData.append("gender", gender);
       formData.append("age", ageNum.toString());
       formData.append("role", "student");
       formData.append("created_by_professor", user.id);
 
-      const imageFileName = `student_${Date.now()}.${image.uri.split('.').pop()}`;
+      // Ensure proper image handling
+      const imageFileName = `student_${Date.now()}.jpg`;
       formData.append("image_0", {
         uri: Platform.OS === 'ios' ? image.uri.replace('file://', '') : image.uri,
         type: 'image/jpeg',
         name: imageFileName,
       } as any);
 
-      console.log("Sending form data:", Object.fromEntries(formData));
-      
-      await register(formData);
+      await register(formData, '/student/register');
       await loadStudents();
       router.replace("/(tabs)/students");
-    } catch (error) {
+    } catch (error: any) {
       console.error('Registration error:', error);
       Alert.alert(
         "Error en el registro",
-        "Por favor verifica los datos e intenta nuevamente"
+        error.message || "Por favor verifica los datos e intenta nuevamente"
       );
     }
   };
