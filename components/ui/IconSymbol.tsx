@@ -17,7 +17,9 @@ const MAPPING = {
   'stop': 'stop',
   'play': 'play',
   'checkmark': 'check',
-  'plus.app': 'plus-box'
+  'plus.app': 'plus-box',
+  'pencil': 'pencil',
+  'trash': 'delete'
 } as const;
 
 export type IconSymbolName = keyof typeof MAPPING;

@@ -125,6 +125,7 @@ const CreateClassroomScreen = () => {
             style={styles.picker}
             onValueChange={(itemValue) => setSelectedSemesterId(itemValue)}
             mode="dropdown"
+            dropdownIconColor="#666"
           >
             <Picker.Item 
               label="Seleccione un semestre" 
@@ -187,6 +188,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginBottom: 8,
+    alignSelf: "flex-start",
+    width: "100%",
   },
   input: {
     height: 40,
@@ -196,22 +199,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 8,
     backgroundColor: "white",
+    width: "100%",
+    minWidth: "100%",
   },
   pickerContainer: {
+    //UPPER MARGIN REDUCE OF THE PICKER BOX 
+    
     width: "100%",
-    marginBottom: 20,
+    marginBottom: 30,
     borderWidth: 1,
     borderColor: "gray",
     borderRadius: 8,
     backgroundColor: "white",
     overflow: "hidden",
-    minHeight: 50,
+    height: 75,
+    justifyContent: "center",
   },
   picker: {
     width: "100%",
     height: 200,
     backgroundColor: "transparent",
     color: "#000",
+    marginTop: Platform.OS === 'ios' ? 0 : -8,
   },
   listContainer: {
     width: "100%",
@@ -278,8 +287,16 @@ const styles = StyleSheet.create({
     color: "#666",
   },
   buttonContainer: {
+    //FIX RECUDE THE BUTTON CONTAINER MARGIN 
+      
+    marginTop: -80,
+    marginBottom: -20,
+  
+    paddingVertical: 0,
+    flex: 0.8,
+    justifyContent: "center",
+    alignItems: "center",
     width: "100%",
-    paddingVertical: 30,
     backgroundColor: "transparent",
     position: "relative",
     zIndex: 2,

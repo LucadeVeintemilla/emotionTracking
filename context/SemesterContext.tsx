@@ -14,6 +14,8 @@ interface SemesterContextType {
   semesters: Semester[];
   loadSemesters: () => Promise<void>;
   addSemester: (semesterData: { name: string; description: string }) => Promise<void>;
+  updateSemester: (semesterId: string, semesterData: { name: string; description: string }) => Promise<void>;
+  deleteSemester: (semesterId: string) => Promise<void>;
 }
 
 const SemesterContext = createContext<SemesterContextType | undefined>(undefined);
@@ -28,7 +30,7 @@ export const SemesterProvider = ({ children }: { children: React.ReactNode }) =>
     try {
       console.log("Loading semesters...");
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/semester/all`, // Updated endpoint
+        `${process.env.EXPO_PUBLIC_API_URL}/semester/all`,
         {
           method: "GET",
           headers: {
@@ -71,7 +73,7 @@ export const SemesterProvider = ({ children }: { children: React.ReactNode }) =>
     try {
       console.log("Creating semester:", semesterData);
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/semester/create`, // Updated endpoint
+        `${process.env.EXPO_PUBLIC_API_URL}/semester/create`,
         {
           method: "POST",
           headers: {
@@ -84,7 +86,7 @@ export const SemesterProvider = ({ children }: { children: React.ReactNode }) =>
 
       if (response.ok) {
         console.log("Semester created successfully");
-        await loadSemesters(); // Reload semesters after adding
+        await loadSemesters();
       } else {
         const errorText = await response.text();
         console.error("Failed to create semester:", response.status, errorText);
@@ -95,12 +97,91 @@ export const SemesterProvider = ({ children }: { children: React.ReactNode }) =>
     }
   };
 
+  const updateSemester = async (semesterId: string, semesterData: { name: string; description: string }) => {
+    if (!token) {
+      console.error("No token available");
+      return;
+    }
+
+    try {
+      console.log("Updating semester:", semesterId, semesterData);
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/semester/${semesterId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify(semesterData),
+        }
+      );
+
+      if (response.ok) {
+        console.log("Semester updated successfully");
+        // Update local state
+        setSemesters(prevSemesters => 
+          prevSemesters.map(semester => 
+            semester.id === semesterId 
+              ? { ...semester, ...semesterData } 
+              : semester
+          )
+        );
+      } else {
+        const errorText = await response.text();
+        console.error("Failed to update semester:", response.status, errorText);
+        throw new Error(errorText || "Failed to update semester");
+      }
+    } catch (error) {
+      console.error("Error in updateSemester:", error);
+      throw error;
+    }
+  };
+
+  const deleteSemester = async (semesterId: string) => {
+    if (!token) {
+      console.error("No token available");
+      return;
+    }
+
+    try {
+      console.log("Deleting semester:", semesterId);
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/semester/${semesterId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        console.log("Semester deleted successfully");
+        // Update local state
+        setSemesters(prevSemesters => 
+          prevSemesters.filter(semester => semester.id !== semesterId)
+        );
+      } else {
+        const errorText = await response.text();
+        console.error("Failed to delete semester:", response.status, errorText);
+        throw new Error(errorText || "Failed to delete semester");
+      }
+    } catch (error) {
+      console.error("Error in deleteSemester:", error);
+      throw error;
+    }
+  };
+
   return (
     <SemesterContext.Provider
       value={{
         semesters,
         loadSemesters,
         addSemester,
+        updateSemester,
+        deleteSemester,
       }}
     >
       {children}

@@ -102,11 +102,12 @@ export const ClassroomProvider = ({ children }: { children: ReactNode }) => {
   const removeClassroom = async (classroomId: string) => {
     try {
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/classrooms/${classroomId}`,
+        `${process.env.EXPO_PUBLIC_API_URL}/classroom/${classroomId}`,
         {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
           },
         }
       );
@@ -120,6 +121,7 @@ export const ClassroomProvider = ({ children }: { children: ReactNode }) => {
       }
     } catch (error) {
       console.error("Error removing classroom:", error);
+      throw error;
     }
   };
 
@@ -129,28 +131,45 @@ export const ClassroomProvider = ({ children }: { children: ReactNode }) => {
   ) => {
     try {
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/classrooms/${classroomId}`,
+        `${process.env.EXPO_PUBLIC_API_URL}/classroom/${classroomId}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
           },
           body: JSON.stringify(updatedClassroom),
         }
       );
 
       if (response.ok) {
-        const updatedData: Classroom = await response.json();
-        setClassrooms((prevClassrooms) =>
-          prevClassrooms.map((classroom) =>
-            classroom.id === classroomId ? updatedData : classroom
-          )
-        );
+        const responseData = await response.json();
+        
+        // Check if response is an object with classroom data or just a message
+        if (responseData && responseData._id) {
+          // Format the response to match our Classroom interface
+          const updatedData: Classroom = {
+            id: responseData._id,
+            name: responseData.name,
+            professor_id: responseData.professor_id,
+            students: Array.isArray(responseData.students) ? responseData.students : []
+          };
+          
+          setClassrooms((prevClassrooms) =>
+            prevClassrooms.map((classroom) =>
+              classroom.id === classroomId ? updatedData : classroom
+            )
+          );
+        } else {
+          // If we just got a success message but no data, reload classrooms
+          await loadClassrooms();
+        }
       } else {
         throw new Error("Failed to update classroom");
       }
     } catch (error) {
       console.error("Error updating classroom:", error);
+      throw error;
     }
   };
 

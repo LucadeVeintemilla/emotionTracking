@@ -89,7 +89,6 @@ export default function CreateStudentScreen() {
       formData.append("role", "student");
       formData.append("created_by_professor", user.id);
 
-      // Ensure proper image handling
       const imageFileName = `student_${Date.now()}.jpg`;
       formData.append("image_0", {
         uri: Platform.OS === 'ios' ? image.uri.replace('file://', '') : image.uri,

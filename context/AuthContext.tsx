@@ -134,7 +134,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const headers: Record<string, string> = {};
       
-      // Add Authorization header for student registration
       if (endpoint === '/student/register' && token) {
         headers['Authorization'] = `Bearer ${token}`;
       }
@@ -181,7 +180,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error(errorData.error || "Failed to delete student");
       }
 
-      // Update local state
       setStudents(prev => prev.filter(student => student.id !== studentId));
 
     } catch (error) {
@@ -211,7 +209,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error(errorData.error || "Failed to update student");
       }
 
-      // Update local state
       setStudents(prev => 
         prev.map(student => 
           student.id === studentId ? { ...student, ...updatedData } : student
