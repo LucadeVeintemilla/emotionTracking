@@ -287,11 +287,11 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
       
-    marginTop: -80,
+    marginTop: -10,
     marginBottom: -20,
   
     paddingVertical: 0,
-    flex: 0.8,
+    flex: 0.3,
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
