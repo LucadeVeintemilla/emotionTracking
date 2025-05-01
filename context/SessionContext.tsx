@@ -26,6 +26,10 @@ interface SessionContextType {
     classroom_id: string;
     name: string;
   }) => Promise<void>;
+  updateSession: (id: string, sessionData: {
+    name: string;
+  }) => Promise<void>;
+  deleteSession: (id: string) => Promise<void>;
   processFrame: (formData: FormData) => any;
   getSessionStats: (session_id: string) => Promise<EmotionStats[]>;
 }
@@ -159,12 +163,68 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const updateSession = async (id: string, sessionData: { name: string }) => {
+    try {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/session/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(sessionData),
+        }
+      );
+
+      if (response.ok) {
+        setSessions((prevSessions) =>
+          prevSessions.map((session) =>
+            session.id === id ? { ...session, ...sessionData } : session
+          )
+        );
+      } else {
+        throw new Error("Failed to update session");
+      }
+    } catch (error) {
+      console.log("Error updating session:", error);
+      throw error;
+    }
+  };
+
+  const deleteSession = async (id: string) => {
+    try {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/session/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        setSessions((prevSessions) =>
+          prevSessions.filter((session) => session.id !== id)
+        );
+      } else {
+        throw new Error("Failed to delete session");
+      }
+    } catch (error) {
+      console.log("Error deleting session:", error);
+      throw error;
+    }
+  };
+
   return (
     <SessionContext.Provider
       value={{
         sessions,
         loadSessions,
         addSession,
+        updateSession,
+        deleteSession,
         processFrame,
         getSessionStats,
       }}
