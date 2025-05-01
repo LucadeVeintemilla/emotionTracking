@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         role: student.role,
         images: student.images.map((img: string) => img.replace(/\\/g, '/')),
       }));
-
+      
       setStudents(formattedStudents);
     } catch (error) {
       console.error("Error in loadStudents:", error);
@@ -133,7 +133,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const register = async (formData: FormData, endpoint: string = '/user/register'): Promise<void> => {
     try {
       const headers: Record<string, string> = {};
-
+      
       if (endpoint === '/student/register' && token) {
         headers['Authorization'] = `Bearer ${token}`;
       }
@@ -191,7 +191,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       await loadStudents();
-
+      
     } catch (error) {
       console.error("Register error:", error);
       throw error;
@@ -247,8 +247,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error(errorData.error || "Failed to update student");
       }
 
-      setStudents(prev =>
-        prev.map(student =>
+      setStudents(prev => 
+        prev.map(student => 
           student.id === studentId ? { ...student, ...updatedData } : student
         )
       );
