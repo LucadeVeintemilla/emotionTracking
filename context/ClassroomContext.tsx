@@ -28,6 +28,14 @@ interface ClassroomContextType {
     classroomId: string,
     studentId: string
   ) => Promise<void>;
+  addStudentsToClassroom: (
+    classroomId: string,
+    studentIds: string[]
+  ) => Promise<void>;
+  removeStudentsFromClassroom: (
+    classroomId: string,
+    studentIds: string[]
+  ) => Promise<void>;
 }
 
 const ClassroomContext = createContext<ClassroomContextType | undefined>(
@@ -176,28 +184,51 @@ export const ClassroomProvider = ({ children }: { children: ReactNode }) => {
   ) => {
     try {
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/classrooms/${classroomId}/students`,
+        `${process.env.EXPO_PUBLIC_API_URL}/classroom/${classroomId}/students`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
           },
-          body: JSON.stringify({ studentId }),
+          body: JSON.stringify({ student_ids: [studentId] }),
         }
       );
 
       if (response.ok) {
-        const updatedClassroom: Classroom = await response.json();
-        setClassrooms((prevClassrooms) =>
-          prevClassrooms.map((classroom) =>
-            classroom.id === classroomId ? updatedClassroom : classroom
-          )
-        );
+        await loadClassrooms();
       } else {
         throw new Error("Failed to add student to classroom");
       }
     } catch (error) {
       console.error("Error adding student to classroom:", error);
+    }
+  };
+
+  const addStudentsToClassroom = async (
+    classroomId: string,
+    studentIds: string[]
+  ) => {
+    try {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/classroom/${classroomId}/students`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify({ student_ids: studentIds }),
+        }
+      );
+
+      if (response.ok) {
+        await loadClassrooms();
+      } else {
+        throw new Error("Failed to add students to classroom");
+      }
+    } catch (error) {
+      console.error("Error adding students to classroom:", error);
     }
   };
 
@@ -207,27 +238,51 @@ export const ClassroomProvider = ({ children }: { children: ReactNode }) => {
   ) => {
     try {
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/classrooms/${classroomId}/students/${studentId}`,
+        `${process.env.EXPO_PUBLIC_API_URL}/classroom/${classroomId}/students/remove`,
         {
-          method: "DELETE",
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
           },
+          body: JSON.stringify({ student_ids: [studentId] }),
         }
       );
 
       if (response.ok) {
-        const updatedClassroom: Classroom = await response.json();
-        setClassrooms((prevClassrooms) =>
-          prevClassrooms.map((classroom) =>
-            classroom.id === classroomId ? updatedClassroom : classroom
-          )
-        );
+        await loadClassrooms();
       } else {
         throw new Error("Failed to remove student from classroom");
       }
     } catch (error) {
       console.error("Error removing student from classroom:", error);
+    }
+  };
+
+  const removeStudentsFromClassroom = async (
+    classroomId: string,
+    studentIds: string[]
+  ) => {
+    try {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/classroom/${classroomId}/students/remove`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify({ student_ids: studentIds }),
+        }
+      );
+
+      if (response.ok) {
+        await loadClassrooms();
+      } else {
+        throw new Error("Failed to remove students from classroom");
+      }
+    } catch (error) {
+      console.error("Error removing students from classroom:", error);
     }
   };
 
@@ -241,6 +296,8 @@ export const ClassroomProvider = ({ children }: { children: ReactNode }) => {
         updateClassroom,
         addStudentToClassroom,
         removeStudentFromClassroom,
+        addStudentsToClassroom,
+        removeStudentsFromClassroom,
       }}
     >
       {children}
