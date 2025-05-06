@@ -10,7 +10,10 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  View,
+  Modal,
 } from "react-native";
+import { Picker } from '@react-native-picker/picker';
 import { router } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import { useAuth } from "@/context/AuthContext";
@@ -20,12 +23,17 @@ export default function Register({ navigation }: any) {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [gender, setGender] = useState("");
+  const [gender, setGender] = useState("male");
   const [age, setAge] = useState("");
   const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>(null);
   const [role, setRole] = useState("professor");
+  const [showGenderPicker, setShowGenderPicker] = useState(false);
 
   const { register } = useAuth();
+
+  const openGenderPicker = () => {
+    setShowGenderPicker(true);
+  };
 
   const pickImage = async () => {
     const permissionResult =
@@ -143,13 +151,39 @@ export default function Register({ navigation }: any) {
           secureTextEntry
           placeholderTextColor="#888"
         />
-        <TextInput
+        <TouchableOpacity 
           style={styles.input}
-          placeholder="Género"
-          value={gender}
-          onChangeText={setGender}
-          placeholderTextColor="#888"
-        />
+          onPress={openGenderPicker}
+        >
+          <Text style={[styles.inputText, !gender && styles.placeholder]}>
+            {gender ? (gender === 'male' ? 'Masculino' : 'Femenino') : 'Género'}
+          </Text>
+        </TouchableOpacity>
+        
+        <Modal
+          visible={showGenderPicker}
+          transparent={true}
+          animationType="slide"
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <View style={styles.pickerHeader}>
+                <Button title="Cerrar" onPress={() => setShowGenderPicker(false)} />
+              </View>
+              <Picker
+                selectedValue={gender}
+                onValueChange={(itemValue) => {
+                  setGender(itemValue);
+                  setShowGenderPicker(false);
+                }}
+                style={styles.picker}
+              >
+                <Picker.Item label="Masculino" value="male" />
+                <Picker.Item label="Femenino" value="female" />
+              </Picker>
+            </View>
+          </View>
+        </Modal>
         <TextInput
           style={styles.input}
           placeholder="Edad"
@@ -185,6 +219,7 @@ const styles = StyleSheet.create({
     width: "100%",
     color: "#000",
     backgroundColor: "#fff",
+    justifyContent: 'center',
   },
   imageContainer: {
     width: 150,
@@ -205,5 +240,36 @@ const styles = StyleSheet.create({
     color: "#555",
     fontSize: 14,
     textAlign: "center",
+  },
+  inputText: {
+    color: '#000',
+    fontSize: 16,
+    padding: 0,
+  },
+  placeholder: {
+    color: '#888',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingBottom: 20,
+    height: '40%', 
+  },
+  pickerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    padding: 15, 
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  picker: {
+    height: 150,
+    width: "100%",
   },
 });

@@ -209,7 +209,11 @@ const styles = StyleSheet.create({
     color: "#666",
   },
   buttonContainer: {
-    marginTop: 10,
+    marginTop: 30,
+    marginBottom: -100,
+  
+    paddingVertical: 0,
+    flex: 0.3,
     paddingBottom: 90,
   },
 });

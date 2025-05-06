@@ -26,7 +26,6 @@ const StudentsScreen = () => {
     keyboardShouldPersistTaps="handled"
   >
       <View style={{ margin: 5 }}>
-        <ThemedText>Estudiantes </ThemedText>
         {students && students.length > 0 ? (
           students.map((student) => (
             <StudentCard 

@@ -22,7 +22,6 @@ export default function DashboardScreen() {
       keyboardShouldPersistTaps="handled"
     >
       <View style={styles.container}>
-        <ThemedText style={styles.title}>Análisis de Sesiones</ThemedText>
         
         <View style={styles.filterContainer}>
           <Dropdown
@@ -46,7 +45,7 @@ export default function DashboardScreen() {
             key={index}
             onPress={() => router.push(`/session/stats/${session.id}`)}
           >
-            <ThemedView style={styles.card}>
+            <ThemedView style={styles.card} variant='default'>
               <ThemedText style={styles.sessionName}>{session.name}</ThemedText>
               <ThemedText style={styles.date}>
                 {new Date(session.created_at).toLocaleDateString()}
@@ -95,6 +94,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 1.5,
     elevation: 2,
+    borderColor: '#4E7D96',
+    borderWidth: 1,
   },
   dropdownPlaceholder: {
     fontSize: 16,

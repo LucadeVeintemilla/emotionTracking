@@ -76,7 +76,6 @@ const SessionsScreen = () => {
       keyboardShouldPersistTaps="handled"
     >
       <View style={{ margin: 5 }}>
-        <ThemedText>Sesiones</ThemedText>
         {sessions.map((session, index) => (
           <SessionCard 
             key={index} 
@@ -141,7 +140,7 @@ interface SessionCardProps {
 const SessionCard = ({ session, classroomName, formattedDate, onEdit, onDelete }: SessionCardProps) => {
   return (
     <View style={{ margin: 5 }}>
-      <ThemedView style={styles.card}>
+      <ThemedView style={styles.card} variant='default'>
         <TouchableOpacity
           style={styles.cardContent}
           onPress={() => router.push(`/session/${session.id}`)}
@@ -161,7 +160,7 @@ const SessionCard = ({ session, classroomName, formattedDate, onEdit, onDelete }
               onEdit();
             }}
           >
-            <IconSymbol name="pencil" size={20} color="#4CAF50" />
+            <IconSymbol name="pencil" size={20} color="#4E7D96" />
           </TouchableOpacity>
           
           <TouchableOpacity 
@@ -171,7 +170,7 @@ const SessionCard = ({ session, classroomName, formattedDate, onEdit, onDelete }
               onDelete();
             }}
           >
-            <IconSymbol name="trash" size={20} color="#F44336" />
+            <IconSymbol name="trash" size={20} color="#4E7D96" />
           </TouchableOpacity>
         </View>
       </ThemedView>
@@ -280,7 +279,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
   },
   saveButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: '#FF844B',
   },
   buttonText: {
     fontWeight: "bold",

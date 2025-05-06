@@ -36,7 +36,6 @@ export default function Login() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView contentContainerStyle={styles.container}>
-        <Text>Acceso</Text>
         <TextInput
           keyboardType="email-address"
           style={styles.input}

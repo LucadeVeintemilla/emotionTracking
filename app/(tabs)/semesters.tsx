@@ -69,7 +69,6 @@ const SemestersScreen = () => {
       keyboardShouldPersistTaps="handled"
     >
       <View style={{ margin: 5 }}>
-        <ThemedText>Semestres</ThemedText>
         {semesters.map((semester, index) => (
           <SemesterCard 
             key={index} 
@@ -159,7 +158,7 @@ const SemesterCard = ({ semester, onEdit, onDelete }: SemesterCardProps) => {
               onEdit();
             }}
           >
-            <IconSymbol name="pencil" size={20} color="#4CAF50" />
+            <IconSymbol name="pencil" size={20} color="#4E7D96" />
           </TouchableOpacity>
           
           <TouchableOpacity 
@@ -169,7 +168,7 @@ const SemesterCard = ({ semester, onEdit, onDelete }: SemesterCardProps) => {
               onDelete();
             }}
           >
-            <IconSymbol name="trash" size={20} color="#F44336" />
+            <IconSymbol name="trash" size={20} color="#4E7D96" />
           </TouchableOpacity>
         </View>
       </ThemedView>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Image, ScrollView, View, Platform, Alert, TouchableOpacity, TextInput } from "react-native";
+import { StyleSheet, Image, ScrollView, View, Platform, Alert, TouchableOpacity, TextInput, Modal, Text, Button } from "react-native";
+import { Picker } from '@react-native-picker/picker';
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { useAuth, User } from "@/context/AuthContext";
@@ -11,6 +12,7 @@ const StudentDetailScreen = () => {
   const params = useLocalSearchParams<{ id: string }>();
   const [student, setStudent] = useState<User | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [showGenderPicker, setShowGenderPicker] = useState(false);
   const [editData, setEditData] = useState({
     name: "",
     last_name: "",
@@ -83,7 +85,11 @@ const StudentDetailScreen = () => {
   };
 
   const handleToggleEdit = () => {
-    setIsEditing(!isEditing);
+    setIsEditing(true);
+  };
+
+  const openGenderPicker = () => {
+    setShowGenderPicker(true);
   };
 
   const handleSaveChanges = async () => {
@@ -163,11 +169,14 @@ const StudentDetailScreen = () => {
 
               <View style={styles.inputGroup}>
                 <ThemedText style={styles.label}>Género:</ThemedText>
-                <TextInput
+                <TouchableOpacity 
                   style={styles.input}
-                  value={editData.gender}
-                  onChangeText={(text) => setEditData({...editData, gender: text})}
-                />
+                  onPress={openGenderPicker}
+                >
+                  <Text style={[styles.inputText, !editData.gender && styles.placeholder]}>
+                    {editData.gender ? (editData.gender === 'male' ? 'Masculino' : 'Femenino') : 'Género'}
+                  </Text>
+                </TouchableOpacity>
               </View>
             </>
           ) : (
@@ -236,6 +245,32 @@ const StudentDetailScreen = () => {
               </ThemedText>
             </TouchableOpacity>
           </View>
+
+          {/* Modal para seleccionar el gu00e9nero */}
+          <Modal
+            visible={showGenderPicker}
+            transparent={true}
+            animationType="slide"
+          >
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <View style={styles.pickerHeader}>
+                  <Button title="Cerrar" onPress={() => setShowGenderPicker(false)} />
+                </View>
+                <Picker
+                  selectedValue={editData.gender}
+                  onValueChange={(itemValue) => {
+                    setEditData({...editData, gender: itemValue});
+                    setShowGenderPicker(false);
+                  }}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="Masculino" value="male" />
+                  <Picker.Item label="Femenino" value="female" />
+                </Picker>
+              </View>
+            </View>
+          </Modal>
         </View>
       </View>
     </ScrollView>
@@ -342,6 +377,8 @@ const styles = StyleSheet.create({
     width: '100%',
     gap: 10,
     marginTop: 20,
+    marginBottom: 80, 
+    paddingBottom: 30, 
   },
   editButton: {
     backgroundColor: '#4CAF50',
@@ -368,5 +405,36 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingBottom: 20,
+    height: '40%', 
+  },
+  pickerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    padding: 15, 
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  picker: {
+    height: 150,
+    width: "100%",
+  },
+  inputText: {
+    color: '#000',
+    fontSize: 16,
+    padding: 0,
+  },
+  placeholder: {
+    color: '#888',
   },
 });

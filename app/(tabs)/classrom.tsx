@@ -67,7 +67,6 @@ const ClassroomsScreen = () => {
     keyboardShouldPersistTaps="handled"
   >
       <View style={{ margin: 5 }}>
-        <ThemedText>Clases</ThemedText>
         {classrooms.map((classroom, index) => (
           <ClassroomCard 
             key={index} 
@@ -128,7 +127,7 @@ interface ClassroomCardProps {
 const ClassroomCard = ({ classroom, onEdit, onDelete }: ClassroomCardProps) => {
   return (
     <View style={{ margin: 5 }}>
-      <ThemedView style={styles.card}>
+      <ThemedView style={styles.card} variant='default'>
         <TouchableOpacity
           style={styles.cardContent}
           onPress={() => router.push(`/classroom/${classroom.id}`)}
@@ -146,7 +145,7 @@ const ClassroomCard = ({ classroom, onEdit, onDelete }: ClassroomCardProps) => {
               onEdit();
             }}
           >
-            <IconSymbol name="pencil" size={20} color="#4CAF50" />
+            <IconSymbol name="pencil" size={20} color="#4E7D96" />
           </TouchableOpacity>
           
           <TouchableOpacity 
@@ -156,7 +155,7 @@ const ClassroomCard = ({ classroom, onEdit, onDelete }: ClassroomCardProps) => {
               onDelete();
             }}
           >
-            <IconSymbol name="trash" size={20} color="#F44336" />
+            <IconSymbol name="trash" size={20} color="#4E7D96" />
           </TouchableOpacity>
         </View>
       </ThemedView>
@@ -262,7 +261,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#9e9e9e',
   },
   saveButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#FF844B",
   },
   buttonText: {
     color: 'white',

@@ -41,7 +41,17 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme() ?? "light";
 
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: Colors[colorScheme].header,
+        },
+        headerTintColor: '#fff',
+        contentStyle: {
+          backgroundColor: Colors[colorScheme].appBackground,
+        }
+      }}
+    >
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="+not-found" />
       <Stack.Screen

@@ -15,16 +15,28 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+        tabBarActiveTintColor: Colors[colorScheme ?? "light"].header,
+        tabBarInactiveTintColor: Colors[colorScheme ?? "light"].header,
         headerShown: true,
+        headerStyle: {
+          backgroundColor: Colors[colorScheme ?? "light"].header,
+          height: 120,
+        },
+        headerTitleStyle: {
+          fontSize: 22,
+          fontWeight: 'bold',
+        },
+        headerTintColor: '#fff',
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
           ios: {
-           
             position: "absolute",
+            backgroundColor: '#fff',
           },
-          default: {},
+          default: {
+            backgroundColor: '#fff',
+          },
         }),
       }}
     >
@@ -42,10 +54,10 @@ export default function TabLayout() {
               }}
             >
               <IconSymbol
-                style={{ marginRight: 10 }}
-                size={28}
+                style={{ marginRight: 15, backgroundColor: '#FF844B', borderRadius: 25, padding: 8, marginTop: 5 }}
+                size={35}
                 name="plus"
-                color={Colors[colorScheme].tint}
+                color={'#fff'}
               />
             </Pressable>
           ),
@@ -54,7 +66,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="dashboard"
         options={{
-          title: "Análisis",
+          title: "Análisis de Sesiones",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="chart.bar.fill" color={color} />
           ),
@@ -74,10 +86,10 @@ export default function TabLayout() {
               }}
             >
               <IconSymbol
-                style={{ marginRight: 10 }}
-                size={28}
+                style={{ marginRight: 15, backgroundColor: '#FF844B', borderRadius: 25, padding: 8, marginTop: 5 }}
+                size={35}
                 name="plus"
-                color={Colors[colorScheme].tint}
+                color={'#fff'}
               />
             </Pressable>
           ),
@@ -97,10 +109,10 @@ export default function TabLayout() {
               }}
             >
               <IconSymbol
-                style={{ marginRight: 10 }}
-                size={28}
+                style={{ marginRight: 15, backgroundColor: '#FF844B', borderRadius: 25, padding: 8, marginTop: 5 }}
+                size={35}
                 name="plus"
-                color={Colors[colorScheme].tint}
+                color={'#fff'}
               />
             </Pressable>
           ),
@@ -120,10 +132,10 @@ export default function TabLayout() {
               }}
             >
               <IconSymbol
-                style={{ marginRight: 10 }}
-                size={28}
+                style={{ marginRight: 15, backgroundColor: '#FF844B', borderRadius: 25, padding: 8, marginTop: 5 }}
+                size={35}
                 name="plus"
-                color={Colors[colorScheme].tint}
+                color={'#fff'}
               />
             </Pressable>
           ),
