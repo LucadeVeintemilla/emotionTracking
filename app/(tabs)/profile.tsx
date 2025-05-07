@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, StyleSheet, View, Button, Alert } from "react-native";
+import { Image, StyleSheet, View, Button, Alert, Platform } from "react-native";
 import { useAuth } from "@/context/AuthContext";
 import { HelloWave } from "@/components/HelloWave";
 import { ThemedText } from "@/components/ThemedText";
@@ -10,7 +10,11 @@ export default function ProfileScreen() {
   const { user, isAuthenticated, logout } = useAuth();
 
   const getImageUrl = (path: string) => {
-    return `${process.env.EXPO_PUBLIC_API_URL}/user/${path}`;
+    if (!path) return "";
+    const normalizedPath = path.replace(/\\/g, '/');
+    const baseUrl = process.env.EXPO_PUBLIC_API_URL;
+    let fullUrl = `${baseUrl}/user/${normalizedPath}`;
+    return fullUrl.trim();
   };
 
   const handleLogout = async () => {
@@ -30,7 +34,9 @@ export default function ProfileScreen() {
           style={styles.profileImage}
         />
         <View style={styles.titleTextContainer}>
-          <ThemedText type="title">Bienvenido, {user?.name || "User"}!</ThemedText>
+          <ThemedText type="title">Bienvenido</ThemedText>
+          <ThemedText type="title">{user?.name || "User"}!</ThemedText>
+
           <HelloWave />
         </View>
       </ThemedView>

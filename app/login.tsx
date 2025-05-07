@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Image,
 } from "react-native";
 import { router } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
@@ -36,6 +37,11 @@ export default function Login() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView contentContainerStyle={styles.container}>
+        <Image
+          source={require('../images/logoTesi.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
         <TextInput
           keyboardType="email-address"
           style={styles.input}
@@ -68,7 +74,13 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    padding: 30,
+  },
+  logo: {
+    width: 300,
+    height: 300,
+    marginBottom: 30,
+    alignSelf: "center",
   },
   input: {
     height: 40,
