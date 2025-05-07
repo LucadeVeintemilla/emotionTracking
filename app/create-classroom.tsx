@@ -166,7 +166,7 @@ const CreateClassroomScreen = () => {
 
         <View style={styles.buttonContainer}>
           <Button
-            title="Crear Clase"
+            title="Crear Materia"
             onPress={handleCreateClassroom}
             disabled={!name || selectedStudents.length === 0 || !selectedSemesterId}
           />

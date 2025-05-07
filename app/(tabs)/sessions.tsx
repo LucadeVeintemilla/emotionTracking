@@ -28,7 +28,7 @@ const SessionsScreen = () => {
   const handleDelete = (session: Session) => {
     Alert.alert(
       "Confirmar eliminación",
-      `¿Estás seguro de que deseas eliminar la sesión "${session.name}"?`,
+      `¿Estás seguro de que deseas eliminar la clase "${session.name}"?`,
       [
         { text: "Cancelar", style: "cancel" },
         { 
@@ -37,9 +37,9 @@ const SessionsScreen = () => {
           onPress: async () => {
             try {
               await deleteSession(session.id);
-              Alert.alert("Éxito", "Sesión eliminada correctamente");
+              Alert.alert("Éxito", "Clase eliminada correctamente");
             } catch (error) {
-              Alert.alert("Error", "No se pudo eliminar la sesión");
+              Alert.alert("Error", "No se pudo eliminar la clase");
             }
           }
         }
@@ -55,9 +55,9 @@ const SessionsScreen = () => {
         name: editName
       });
       setEditModalVisible(false);
-      Alert.alert("Éxito", "Sesión actualizada correctamente");
+      Alert.alert("Éxito", "Clase actualizada correctamente");
     } catch (error) {
-      Alert.alert("Error", "No se pudo actualizar la sesión");
+      Alert.alert("Error", "No se pudo actualizar la Clase");
     }
   };
 
@@ -97,14 +97,14 @@ const SessionsScreen = () => {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <ThemedText style={styles.modalTitle}>Editar Sesión</ThemedText>
+            <ThemedText style={styles.modalTitle}>Editar Clase</ThemedText>
             
             <ThemedText style={styles.label}>Nombre</ThemedText>
             <TextInput
               style={styles.input}
               value={editName}
               onChangeText={setEditName}
-              placeholder="Nombre de la sesión"
+              placeholder="Nombre de la clase"
             />
             
             <View style={styles.buttonRow}>
@@ -147,7 +147,7 @@ const SessionCard = ({ session, classroomName, formattedDate, onEdit, onDelete }
         >
           <View style={styles.containerText}>
             <ThemedText style={styles.sessionName}>{session.name}</ThemedText>
-            <ThemedText style={styles.classroomName}>Clase: {classroomName}</ThemedText>
+            <ThemedText style={styles.classroomName}>Materia: {classroomName}</ThemedText>
             <ThemedText style={styles.date}>Fecha: {formattedDate}</ThemedText>
           </View>
         </TouchableOpacity>

@@ -7,10 +7,11 @@ import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { RootProvider } from "@/RootProvider";
-import { Pressable } from "react-native";
+import { Pressable, TouchableOpacity } from "react-native";
 import { router } from "expo-router";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/Colors";
+import { Ionicons } from '@expo/vector-icons';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -51,7 +52,8 @@ function RootLayoutNav() {
         headerTintColor: '#fff',
         contentStyle: {
           backgroundColor: Colors[colorScheme].appBackground,
-        }
+        },
+        headerBackTitle: '',
       }}
     >
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -62,6 +64,7 @@ function RootLayoutNav() {
           title: "Semestre",
           headerShown: true,
           presentation: "card",
+          headerBackTitle: " ",
         }}
       />
       <Stack.Screen
@@ -70,6 +73,7 @@ function RootLayoutNav() {
           title: "Iniciar Sesión",
           headerShown: true,
           presentation: "card",
+          headerBackTitle: " ",
         }}
       />
       <Stack.Screen
@@ -78,22 +82,25 @@ function RootLayoutNav() {
           title: "Registrarse",
           headerShown: true,
           presentation: "card",
+          headerBackTitle: " ",
         }}
       />
       <Stack.Screen
         name="create-classroom"
         options={{
-          title: "Crear Clase",
+          title: "Crear Materia",
           headerShown: true,
           presentation: "modal",
+          headerBackTitle: " ",
         }}
       />
       <Stack.Screen
         name="create-session"
         options={{
-          title: "Crear Sesión",
+          title: "Crear Clase",
           headerShown: true,
           presentation: "modal",
+          headerBackTitle: " ",
         }}
       />
       <Stack.Screen
@@ -102,6 +109,7 @@ function RootLayoutNav() {
           title: "Crear Estudiante",
           headerShown: true,
           presentation: "modal",
+          headerBackTitle: " ",
         }}
       />
       <Stack.Screen
@@ -110,14 +118,16 @@ function RootLayoutNav() {
           title: "Estudiante",
           headerShown: true,
           presentation: "modal",
+          headerBackTitle: " ",
         }}
       />
       <Stack.Screen
         name="classroom/[id]"
         options={{
-          title: "Clase",
+          title: "Materia",
           headerShown: true,
           presentation: "modal",
+          headerBackTitle: " ",
         }}
       />
       <Stack.Screen
@@ -126,6 +136,15 @@ function RootLayoutNav() {
           title: "Sesión",
           headerShown: true,
           presentation: "card",
+          headerBackTitle: "",
+          headerLeft: (props) => (
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={{ marginLeft: 10 }}
+            >
+              <Ionicons name="arrow-back" size={24} color="white" />
+            </TouchableOpacity>
+          ),
         }}
       />
       <Stack.Screen
@@ -134,6 +153,7 @@ function RootLayoutNav() {
           title: "Estadísticas de Emociones",
           headerShown: true,
           presentation: "modal",
+          headerBackTitle: " ",
         }}
       />
       <Stack.Screen
@@ -142,6 +162,15 @@ function RootLayoutNav() {
           title: "Semestre",
           headerShown: true,
           presentation: "card",
+          headerBackTitle: "",
+          headerLeft: (props) => (
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={{ marginLeft: 10 }}
+            >
+              <Ionicons name="arrow-back" size={24} color="white" />
+            </TouchableOpacity>
+          ),
         }}
       />
       <Stack.Screen
@@ -150,6 +179,7 @@ function RootLayoutNav() {
           title: "Crear Semestre",
           headerShown: true,
           presentation: "modal",
+          headerBackTitle: " ",
         }}
       />
     </Stack>

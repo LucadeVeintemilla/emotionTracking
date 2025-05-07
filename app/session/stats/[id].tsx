@@ -127,11 +127,11 @@ export default function StatsScreen() {
     )[0];
     // MENSAJE GUIA PARA DOCENTE AUN EN PROCESO
     const emotionMessages = {
-      happy: "La sesión fue motivadora ya que la mayoría de los estudiantes se mostraron felices al finalizar la clase.",
-      sad: "La sesión generó cierta preocupación ya que varios estudiantes se sintieron tristes al finalizar la clase.",
-      angrys: "La sesión generó frustración en algunos estudiantes, mostrando signos de enojo al finalizar.",
-      fear: "La sesión generó ansiedad ya que varios estudiantes mostraron miedo al final de la clase.",
-      surprise: "La sesión resultó causar sorpresa para la mayoría de los estudiantes.",
+      happy: "La clase fue motivadora ya que la mayoría de los estudiantes se mostraron felices al finalizar la clase.",
+      sad: "La clase generó cierta preocupación ya que varios estudiantes se sintieron tristes al finalizar la clase.",
+      angrys: "La clase generó frustración en algunos estudiantes, mostrando signos de enojo al finalizar.",
+      fear: "La clase generó ansiedad ya que varios estudiantes mostraron miedo al final de la clase.",
+      surprise: "La clase resultó causar sorpresa para la mayoría de los estudiantes.",
       neutral: "Se mantuvo un ambiente neutral entre los estudiantes durante toda la sesión."
     };
 

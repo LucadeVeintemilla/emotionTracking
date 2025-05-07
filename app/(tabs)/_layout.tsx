@@ -43,7 +43,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="sessions"
         options={{
-          title: "Sesiones",
+          title: "Clases",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="camera.rotate.fill" color={color} />
           ),
@@ -75,7 +75,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="classrom"
         options={{
-          title: "Clases",
+          title: "Materias",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="book.fill" color={color} />
           ),

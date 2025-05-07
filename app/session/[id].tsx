@@ -109,7 +109,7 @@ const SessionDetailScreen = () => {
             </ThemedText>
           </View>
           <View style={styles.classContainer}>
-            <ThemedText style={styles.classLabel}>Clase</ThemedText>
+            <ThemedText style={styles.classLabel}>Materia</ThemedText>
             <ThemedText style={styles.className}>
               {sessionClassroom!.name}
             </ThemedText>

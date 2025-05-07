@@ -28,7 +28,7 @@ const ClassroomsScreen = () => {
   const handleDelete = (classroom: Classroom) => {
     Alert.alert(
       "Confirmar eliminación",
-      `¿Estás seguro de que deseas eliminar la clase "${classroom.name}"?`,
+      `¿Estás seguro de que deseas eliminar la materia "${classroom.name}"?`,
       [
         { text: "Cancelar", style: "cancel" },
         { 
@@ -37,9 +37,9 @@ const ClassroomsScreen = () => {
           onPress: async () => {
             try {
               await removeClassroom(classroom.id);
-              Alert.alert("Éxito", "Clase eliminada correctamente");
+              Alert.alert("Éxito", "Materia eliminada correctamente");
             } catch (error) {
-              Alert.alert("Error", "No se pudo eliminar la clase");
+              Alert.alert("Error", "No se pudo eliminar la Materia");
             }
           }
         }
@@ -56,9 +56,9 @@ const ClassroomsScreen = () => {
         students: currentClassroom.students
       });
       setEditModalVisible(false);
-      Alert.alert("Éxito", "Clase actualizada correctamente");
+      Alert.alert("Éxito", "Materia actualizada correctamente");
     } catch (error) {
-      Alert.alert("Error", "No se pudo actualizar la clase");
+      Alert.alert("Error", "No se pudo actualizar la Materia");
     }
   };
 

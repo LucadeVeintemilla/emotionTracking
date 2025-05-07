@@ -89,17 +89,17 @@ const CreateSessionScreen = () => {
     >
       <ThemedView style={styles.container}>
         <View style={styles.contentContainer}>
-          <ThemedText style={styles.label}>Ingrese el nombre de la sesión:</ThemedText>
+          <ThemedText style={styles.label}>Ingrese el nombre de la Clase:</ThemedText>
           <TextInput
             style={styles.input}
-            placeholder="Nombre de la Sesión"
+            placeholder="Nombre de la Clase"
             value={name}
             onChangeText={setName}
             placeholderTextColor="#888"
           />
 
           <ThemedText style={styles.label}>
-            Selecciona la clase({classrooms.length})
+            Selecciona la materia({classrooms.length})
           </ThemedText>
           <View style={styles.listContainer}>
             <FlatList

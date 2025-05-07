@@ -307,16 +307,16 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 100,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   infoContainer: {
     width: '100%',
     alignItems: 'center',
   },
   name: {
-    fontSize: 28,
+    fontSize: 25,
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: 10,
     textAlign: 'center',
   },
   infoRow: {
