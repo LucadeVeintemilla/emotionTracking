@@ -177,9 +177,11 @@ export default function Register({ navigation }: any) {
                   setShowGenderPicker(false);
                 }}
                 style={styles.picker}
+                dropdownIconColor="#007AFF"
+                itemStyle={{ color: '#000000' }}
               >
-                <Picker.Item label="Masculino" value="male" />
-                <Picker.Item label="Femenino" value="female" />
+                <Picker.Item label="Masculino" value="male" color="#000000" />
+                <Picker.Item label="Femenino" value="female" color="#000000" />
               </Picker>
             </View>
           </View>
@@ -255,11 +257,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    backgroundColor: 'white',
+    backgroundColor: Platform.OS === 'ios' ? '#f8f8f8' : '#ffffff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     paddingBottom: 20,
-    height: '40%', 
+    height: '40%',
   },
   pickerHeader: {
     flexDirection: 'row',
