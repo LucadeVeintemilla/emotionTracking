@@ -74,6 +74,7 @@ function RootLayoutNav() {
           headerShown: true,
           presentation: "card",
           headerBackTitle: " ",
+          headerBackVisible: false, 
         }}
       />
       <Stack.Screen
